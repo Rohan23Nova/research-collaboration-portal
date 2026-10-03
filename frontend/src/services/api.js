@@ -1,23 +1,15 @@
 // services/api.js — Axios instance
-// All backend calls go through this single axios instance.
-// Benefits:
-//   - One place to set baseURL, timeout, headers
-//   - One place to attach the JWT token from localStorage
-//   - One place to handle 401 → auto logout in future phases
-
 import axios from 'axios';
 
 const api = axios.create({
-  // In dev, Vite proxies /api → http://localhost:5000
-  // In production you'd set this to the real API domain.
   baseURL: '/api',
-  timeout: 10000, // fail fast after 10s
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor: attach JWT if present (used from Phase 2 onward)
+// Attach JWT token to every request if it exists
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('rcp_token');
   if (token) {
@@ -25,5 +17,24 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Handle 401 Unauthorized globally
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // If the backend says the token is invalid/expired
+    if (error.response && error.response.status === 401) {
+      // Don't auto-logout if we're explicitly trying to login/register (they return 401 for bad creds)
+      const isAuthEndpoint = error.config.url.includes('/auth/login') || error.config.url.includes('/auth/register');
+      
+      if (!isAuthEndpoint) {
+        localStorage.removeItem('rcp_token');
+        // Dispatch a custom event that AuthContext will listen to
+        window.dispatchEvent(new Event('rcp_unauthorized'));
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;

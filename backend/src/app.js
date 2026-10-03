@@ -9,29 +9,28 @@ import dotenv from 'dotenv';
 
 import healthRouter from './routes/health.js';
 
+import authRouter from './routes/auth.routes.js';
+
 dotenv.config();
 
 const app = express();
 
 // ── Security headers ───────────────────────────────────────────────────────
-// helmet() sets a dozen HTTP headers (X-Frame-Options, CSP, etc.) to
-// reduce common web vulnerabilities with zero configuration needed.
 app.use(helmet());
 
 // ── CORS ──────────────────────────────────────────────────────────────────
-// Only the frontend origin is allowed to make cross-origin requests.
-// This prevents other websites from calling our API on behalf of users.
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true, // allow cookies/auth headers
 }));
 
 // ── Body parsing ──────────────────────────────────────────────────────────
-app.use(express.json());          // parse JSON request bodies
-app.use(express.urlencoded({ extended: true })); // parse form data
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // ── Routes ────────────────────────────────────────────────────────────────
 app.use('/api/health', healthRouter);
+app.use('/api/auth', authRouter);
 
 // ── 404 handler ───────────────────────────────────────────────────────────
 app.use((_req, res) => {
