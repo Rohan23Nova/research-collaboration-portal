@@ -6,17 +6,19 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import Skeleton from '../../components/ui/Skeleton';
 import Badge from '../../components/ui/Badge';
-import { ArrowLeft, LayoutDashboard, Users, FileText, CheckSquare, Activity } from 'lucide-react';
+import { ArrowLeft, LayoutDashboard, Users, FileText, CheckSquare, Activity, MessageSquare } from 'lucide-react';
 
 import OverviewTab from './workspace/OverviewTab';
 import TeamTab from './workspace/TeamTab';
 import DocumentsTab from './workspace/DocumentsTab';
 import MilestonesTab from './workspace/MilestonesTab';
 import ReportsTab from './workspace/ReportsTab';
+import ChatTab from './workspace/ChatTab';
 
 const TABS = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'team', label: 'Team', icon: Users },
+  { id: 'chat', label: 'Project Chat', icon: MessageSquare },
   { id: 'documents', label: 'Documents', icon: FileText },
   { id: 'milestones', label: 'Milestones & Tasks', icon: CheckSquare },
   { id: 'reports', label: 'Progress Reports', icon: Activity },
@@ -117,6 +119,7 @@ export default function WorkspacePage() {
       <div className="mt-6">
         {activeTab === 'overview' && <OverviewTab project={project} />}
         {activeTab === 'team' && <TeamTab project={project} />}
+        {activeTab === 'chat' && <ChatTab projectId={id} />}
         {activeTab === 'documents' && <DocumentsTab projectId={id} isLeader={userRole === 'Leader'} />}
         {activeTab === 'milestones' && <MilestonesTab projectId={id} isLeader={userRole === 'Leader'} />}
         {activeTab === 'reports' && <ReportsTab projectId={id} isLeader={userRole === 'Leader'} />}

@@ -47,4 +47,9 @@ router.put('/tasks/:taskId/status', statusVal, validateRequest, workspaceControl
 router.get('/reports', workspaceController.getReports);
 router.post('/reports', reportVal, validateRequest, workspaceController.createReport);
 
+// ── Messages (Chat) ────────────────────────────────────────
+const msgVal = [body('message').trim().notEmpty()];
+router.get('/messages', workspaceController.getMessages);
+router.post('/messages', msgVal, validateRequest, workspaceController.sendMessage);
+
 export default router;

@@ -132,6 +132,11 @@ export default function Header({ toggleSidebar }) {
                 ))
               )}
             </div>
+            <div className="border-t border-slate-100 dark:border-slate-800 p-2 text-center">
+              <Link to="/notifications" className="text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+                View all notifications
+              </Link>
+            </div>
           </div>
         </Dropdown>
 

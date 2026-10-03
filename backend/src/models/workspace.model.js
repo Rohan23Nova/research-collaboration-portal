@@ -176,5 +176,55 @@ export default {
     } finally {
       connection.release();
     }
+  },
+
+  // ── Messages (Chat) ─────────────────────────────────────────────────────
+  async getMessages(projectId) {
+    const [rows] = await pool.query(`
+      SELECT m.*, u.name as sender_name, u.profile_image
+      FROM Message m
+      JOIN User u ON m.sender_id = u.user_id
+      WHERE m.project_id = ?
+      ORDER BY m.sent_at ASC
+    `, [projectId]);
+    return rows;
+  },
+
+  async addMessage(projectId, senderId, messageText) {
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+
+      const [result] = await connection.query(`
+        INSERT INTO Message (project_id, sender_id, message)
+        VALUES (?, ?, ?)
+      `, [projectId, senderId, messageText]);
+
+      // Notify other members
+      const [members] = await connection.query('SELECT user_id FROM ProjectMember WHERE project_id = ? AND user_id != ?', [projectId, senderId]);
+      const [sender] = await connection.query('SELECT name FROM User WHERE user_id = ?', [senderId]);
+      const [proj] = await connection.query('SELECT title FROM ResearchProject WHERE project_id = ?', [projectId]);
+
+      if (members.length > 0) {
+        const notifications = members.map(m => [
+          m.user_id,
+          'NEW_MESSAGE',
+          `${sender[0].name} sent a message in "${proj[0].title}".`,
+          false
+        ]);
+        await connection.query(
+          "INSERT INTO Notification (user_id, type, message, is_read) VALUES ?",
+          [notifications]
+        );
+      }
+
+      await connection.commit();
+      return result.insertId;
+    } catch (err) {
+      await connection.rollback();
+      throw err;
+    } finally {
+      connection.release();
+    }
   }
 };

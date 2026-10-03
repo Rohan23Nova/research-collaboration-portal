@@ -110,3 +110,19 @@ export async function createReport(req, res, next) {
     return sendSuccess(res, 'Report submitted', { report_id: id }, 201);
   } catch (err) { next(err); }
 }
+
+// ── Messages (Chat) ─────────────────────────────────────────────────────
+export async function getMessages(req, res, next) {
+  try {
+    const messages = await WorkspaceModel.getMessages(req.params.projectId);
+    return sendSuccess(res, 'Messages fetched', { messages });
+  } catch (err) { next(err); }
+}
+
+export async function sendMessage(req, res, next) {
+  try {
+    const { message } = req.body;
+    const id = await WorkspaceModel.addMessage(req.params.projectId, req.user.user_id, message);
+    return sendSuccess(res, 'Message sent', { message_id: id }, 201);
+  } catch (err) { next(err); }
+}

@@ -25,6 +25,7 @@ import ProjectFormPage from './pages/projects/ProjectFormPage';
 import WorkspacePage from './pages/projects/WorkspacePage';
 import MyRequestsPage from './pages/requests/MyRequestsPage';
 import IncomingRequestsPage from './pages/requests/IncomingRequestsPage';
+import NotificationsPage from './pages/NotificationsPage';
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
                   <Route path="/design-system" element={<DesignSystemPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/profile/:id" element={<ProfilePage />} />
+                  <Route path="/notifications" element={<NotificationsPage />} />
                   
                   {/* Projects */}
                   <Route path="/projects" element={<ProjectsPage />} />
