@@ -4,6 +4,8 @@ import { body, query } from 'express-validator';
 import * as projectController from '../controllers/project.controller.js';
 import { validateRequest } from '../middleware/validate.middleware.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
+import { requireMember } from '../middleware/project.middleware.js';
+import workspaceRouter from './workspace.routes.js';
 
 const router = Router();
 
@@ -41,5 +43,8 @@ router.delete('/:id', projectController.deleteProject);
 
 // Collaboration Request
 router.post('/:id/requests', joinRequestValidation, validateRequest, projectController.requestToJoin);
+
+// Workspace
+router.use('/:projectId/workspace', requireMember, workspaceRouter);
 
 export default router;
