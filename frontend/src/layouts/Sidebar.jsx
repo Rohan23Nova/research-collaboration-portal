@@ -1,6 +1,6 @@
 // frontend/src/layouts/Sidebar.jsx
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Settings, UserCircle, FileClock, Inbox, Users, Award } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, UserCircle, FileClock, Inbox, Users, Award } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Sidebar({ isOpen, setIsOpen }) {
@@ -12,7 +12,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     { name: 'Projects', path: '/projects', icon: FolderKanban },
     { name: 'My Requests', path: '/requests/my-requests', icon: FileClock },
     { name: 'Review Requests', path: '/requests/incoming', icon: Inbox },
-    { name: 'Design System', path: '/design-system', icon: Settings },
   ];
 
   return (
