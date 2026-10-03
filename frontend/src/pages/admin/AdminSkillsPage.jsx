@@ -6,6 +6,8 @@ import { Card, CardBody } from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
+import Skeleton from '../../components/ui/Skeleton';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 import { Trash2, Edit2, Check, X, Plus } from 'lucide-react';
 
 export default function AdminSkillsPage() {
@@ -16,6 +18,11 @@ export default function AdminSkillsPage() {
   
   const [editingId, setEditingId] = useState(null);
   const [editVal, setEditVal] = useState('');
+
+  // Confirm Modal state
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [skillToDelete, setSkillToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchSkills();
@@ -67,18 +74,36 @@ export default function AdminSkillsPage() {
     setEditVal('');
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this skill globally? This affects all users and projects.')) return;
+  const confirmDelete = (id) => {
+    setSkillToDelete(id);
+    setConfirmOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!skillToDelete) return;
+    setDeleting(true);
     try {
-      await api.delete(`/admin/skills/${id}`);
+      await api.delete(`/admin/skills/${skillToDelete}`);
       addToast('Skill deleted', 'success');
-      setSkills(prev => prev.filter(s => s.skill_id !== id));
+      setSkills(prev => prev.filter(s => s.skill_id !== skillToDelete));
+      setConfirmOpen(false);
     } catch (err) {
       addToast('Failed to delete skill', 'error');
+    } finally {
+      setDeleting(false);
+      setSkillToDelete(null);
     }
   };
 
-  if (loading) return <div className="p-8">Loading skills...</div>;
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-4 pb-20">
+        <Skeleton className="h-10 w-48 mb-6" />
+        <Skeleton className="h-20 w-full rounded-xl" />
+        <Skeleton className="h-64 w-full rounded-xl" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto pb-20 space-y-6">
@@ -96,7 +121,7 @@ export default function AdminSkillsPage() {
               onChange={e => setNewSkill(e.target.value)} 
               className="flex-1"
             />
-            <Button type="submit" className="gap-2"><Plus size={18} /> Add Skill</Button>
+            <Button type="submit" className="gap-2 shrink-0"><Plus size={18} /> Add Skill</Button>
           </form>
         </CardBody>
         
@@ -112,7 +137,7 @@ export default function AdminSkillsPage() {
                     onKeyDown={e => { if(e.key === 'Enter') saveEdit(s.skill_id); if(e.key === 'Escape') cancelEdit(); }}
                   />
                 ) : (
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center flex-wrap gap-3">
                     <span className="font-medium text-slate-900 dark:text-white">{s.skill_name}</span>
                     <Badge variant="neutral" className="text-xs">Used by {s.user_count} users</Badge>
                     <Badge variant="neutral" className="text-xs">Used in {s.project_count} projects</Badge>
@@ -123,13 +148,13 @@ export default function AdminSkillsPage() {
               <div className="flex items-center gap-2">
                 {editingId === s.skill_id ? (
                   <>
-                    <Button variant="ghost" size="sm" className="text-emerald-600" onClick={() => saveEdit(s.skill_id)}><Check size={18} /></Button>
-                    <Button variant="ghost" size="sm" className="text-slate-500" onClick={cancelEdit}><X size={18} /></Button>
+                    <Button variant="ghost" size="sm" className="text-emerald-600 focus:ring-emerald-500" onClick={() => saveEdit(s.skill_id)} aria-label="Save Edit"><Check size={18} /></Button>
+                    <Button variant="ghost" size="sm" className="text-slate-500 focus:ring-slate-500" onClick={cancelEdit} aria-label="Cancel Edit"><X size={18} /></Button>
                   </>
                 ) : (
                   <>
-                    <Button variant="ghost" size="sm" onClick={() => startEdit(s)}><Edit2 size={16} /></Button>
-                    <Button variant="ghost" size="sm" className="text-red-600" onClick={() => handleDelete(s.skill_id)}><Trash2 size={16} /></Button>
+                    <Button variant="ghost" size="sm" onClick={() => startEdit(s)} aria-label="Edit Skill"><Edit2 size={16} /></Button>
+                    <Button variant="ghost" size="sm" className="text-red-600 focus:ring-red-500" onClick={() => confirmDelete(s.skill_id)} aria-label="Delete Skill"><Trash2 size={16} /></Button>
                   </>
                 )}
               </div>
@@ -138,6 +163,16 @@ export default function AdminSkillsPage() {
           {skills.length === 0 && <p className="text-center text-slate-500 py-8">No skills available.</p>}
         </div>
       </Card>
+
+      <ConfirmModal 
+        isOpen={confirmOpen}
+        onClose={() => !deleting && setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Global Skill"
+        message="Are you sure you want to delete this skill globally? This will remove the skill tag from all associated users and projects."
+        confirmText="Delete Skill"
+        loading={deleting}
+      />
     </div>
   );
 }

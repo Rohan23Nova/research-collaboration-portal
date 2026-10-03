@@ -101,7 +101,15 @@ export default function MilestonesTab({ projectId, isLeader }) {
     return 'neutral';
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-16 w-full rounded-xl" />
+        <Skeleton className="h-48 w-full rounded-xl" />
+        <Skeleton className="h-16 w-full rounded-xl" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -113,7 +121,9 @@ export default function MilestonesTab({ projectId, isLeader }) {
       )}
 
       {milestones.length === 0 ? (
-        <p className="text-center text-slate-500 py-8">No milestones defined yet.</p>
+        <div className="text-center text-slate-500 py-12 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
+          No milestones defined yet.
+        </div>
       ) : (
         <div className="space-y-4">
           {milestones.map(m => (

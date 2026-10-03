@@ -6,6 +6,7 @@ import Button from '../../../components/ui/Button';
 import Textarea from '../../../components/ui/Textarea';
 import { Card, CardBody, CardHeader } from '../../../components/ui/Card';
 import Avatar from '../../../components/ui/Avatar';
+import Skeleton from '../../../components/ui/Skeleton';
 
 export default function ReportsTab({ projectId }) {
   const { addToast } = useToast();
@@ -46,7 +47,15 @@ export default function ReportsTab({ projectId }) {
     }
   };
 
-  if (loading) return <div>Loading reports...</div>;
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-48 w-full rounded-xl" />
+        <Skeleton className="h-32 w-full rounded-xl" />
+        <Skeleton className="h-32 w-full rounded-xl" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -96,7 +105,11 @@ export default function ReportsTab({ projectId }) {
             </CardBody>
           </Card>
         ))}
-        {reports.length === 0 && <p className="text-center text-slate-500 py-4">No progress reports submitted yet.</p>}
+        {reports.length === 0 && (
+          <div className="text-center text-slate-500 py-12 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
+            No progress reports submitted yet.
+          </div>
+        )}
       </div>
 
     </div>
