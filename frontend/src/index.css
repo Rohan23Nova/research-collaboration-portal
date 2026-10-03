@@ -1,0 +1,64 @@
+/* index.css — Global styles & design-system tokens
+   Tailwind v4: @import "tailwindcss" replaces the old @tailwind directives.
+   We define CSS custom properties here for our design system so components
+   can reference --color-accent, --radius, etc. directly in Tailwind classes
+   via the theme() function or arbitrary values. */
+
+@import "tailwindcss";
+
+/* ── Design tokens ──────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    /* Accent: single indigo brand color */
+    --color-accent:        210 100% 56%; /* HSL — indigo-500 equivalent */
+    --color-accent-dark:   226 71% 55%;
+
+    /* Backgrounds */
+    --color-bg:            0 0% 100%;        /* white */
+    --color-bg-subtle:     220 14% 96%;      /* slate-100 */
+    --color-bg-muted:      220 13% 91%;      /* slate-200 */
+
+    /* Borders */
+    --color-border:        220 13% 91%;      /* slate-200 */
+
+    /* Text */
+    --color-text:          222 47% 11%;      /* slate-900 */
+    --color-text-muted:    215 16% 47%;      /* slate-500 */
+
+    /* Shadows */
+    --shadow-sm:   0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md:   0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+
+    /* Radius */
+    --radius-sm:  6px;
+    --radius-md:  8px;
+    --radius-lg:  12px;
+  }
+
+  /* Dark mode — class-based (toggled by ThemeContext) */
+  .dark {
+    --color-bg:            222 47% 9%;       /* slate-950 */
+    --color-bg-subtle:     222 47% 11%;      /* slate-900 */
+    --color-bg-muted:      217 33% 17%;      /* slate-800 */
+    --color-border:        217 33% 17%;      /* slate-800 */
+    --color-text:          210 40% 98%;      /* slate-50 */
+    --color-text-muted:    215 20% 65%;      /* slate-400 */
+  }
+
+  /* Base typography */
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-50;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+
+  /* Smooth focus rings — accessible but non-distracting */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-indigo-500;
+  }
+}
