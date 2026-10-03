@@ -8,8 +8,9 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 
 import healthRouter from './routes/health.js';
-
 import authRouter from './routes/auth.routes.js';
+import userRouter from './routes/user.routes.js';
+import skillRouter from './routes/skill.routes.js';
 
 dotenv.config();
 
@@ -31,6 +32,8 @@ app.use(express.urlencoded({ extended: true }));
 // ── Routes ────────────────────────────────────────────────────────────────
 app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/users', userRouter);
+app.use('/api/skills', skillRouter);
 
 // ── 404 handler ───────────────────────────────────────────────────────────
 app.use((_req, res) => {

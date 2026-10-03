@@ -18,6 +18,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import AppLayout from './layouts/AppLayout';
 import DashboardPage from './pages/DashboardPage';
 import DesignSystemPage from './pages/DesignSystemPage';
+import ProfilePage from './pages/ProfilePage';
 
 export default function App() {
   return (
@@ -37,6 +38,8 @@ export default function App() {
                 <Route element={<AppLayout />}>
                   <Route path="/dashboard" element={<DashboardPage />} />
                   <Route path="/design-system" element={<DesignSystemPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/profile/:id" element={<ProfilePage />} />
                 </Route>
               </Route>
 

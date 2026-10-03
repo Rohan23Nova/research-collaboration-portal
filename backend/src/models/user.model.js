@@ -24,5 +24,19 @@ export default {
       [name, email, passwordHash, role, institution]
     );
     return result.insertId;
+  },
+
+  async updateProfile(userId, { name, bio, institution }) {
+    await pool.query(
+      'UPDATE User SET name = ?, bio = ?, institution = ? WHERE user_id = ?',
+      [name, bio, institution, userId]
+    );
+  },
+
+  async updateProfileImage(userId, filePath) {
+    await pool.query(
+      'UPDATE User SET profile_image = ? WHERE user_id = ?',
+      [filePath, userId]
+    );
   }
 };

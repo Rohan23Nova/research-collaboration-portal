@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import Dropdown from '../components/ui/Dropdown';
 import Avatar from '../components/ui/Avatar';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 
 export default function Header({ toggleSidebar }) {
   const { user, logout } = useAuth();
@@ -73,13 +73,22 @@ export default function Header({ toggleSidebar }) {
           align="right"
           trigger={
             <div className="flex items-center gap-2 cursor-pointer pl-2">
-              <Avatar size="sm" fallback={user?.name || 'U'} />
+              {user?.profile_image ? (
+                <img src={\`/api/users/\${user.user_id}/image\`} className="w-8 h-8 rounded-full object-cover" />
+              ) : (
+                <Avatar size="sm" fallback={user?.name || 'U'} />
+              )}
             </div>
           }
         >
           <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
             <p className="text-sm font-medium text-slate-900 dark:text-white">{user?.name}</p>
             <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user?.email}</p>
+          </div>
+          <div className="py-1 border-b border-slate-100 dark:border-slate-800">
+            <Link to="/profile" className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+              My Profile
+            </Link>
           </div>
           <div className="py-1">
             <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-50 dark:hover:bg-slate-800/50">
