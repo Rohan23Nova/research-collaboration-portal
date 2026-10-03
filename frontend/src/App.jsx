@@ -19,6 +19,9 @@ import AppLayout from './layouts/AppLayout';
 import DashboardPage from './pages/DashboardPage';
 import DesignSystemPage from './pages/DesignSystemPage';
 import ProfilePage from './pages/ProfilePage';
+import ProjectsPage from './pages/projects/ProjectsPage';
+import ProjectDetailsPage from './pages/projects/ProjectDetailsPage';
+import ProjectFormPage from './pages/projects/ProjectFormPage';
 
 export default function App() {
   return (
@@ -40,6 +43,12 @@ export default function App() {
                   <Route path="/design-system" element={<DesignSystemPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/profile/:id" element={<ProfilePage />} />
+                  
+                  {/* Projects */}
+                  <Route path="/projects" element={<ProjectsPage />} />
+                  <Route path="/projects/new" element={<ProjectFormPage />} />
+                  <Route path="/projects/:id" element={<ProjectDetailsPage />} />
+                  <Route path="/projects/:id/edit" element={<ProjectFormPage />} />
                 </Route>
               </Route>
 

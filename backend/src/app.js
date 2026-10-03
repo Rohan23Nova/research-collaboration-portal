@@ -11,6 +11,7 @@ import healthRouter from './routes/health.js';
 import authRouter from './routes/auth.routes.js';
 import userRouter from './routes/user.routes.js';
 import skillRouter from './routes/skill.routes.js';
+import projectRouter from './routes/project.routes.js';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/skills', skillRouter);
+app.use('/api/projects', projectRouter);
 
 // ── 404 handler ───────────────────────────────────────────────────────────
 app.use((_req, res) => {
