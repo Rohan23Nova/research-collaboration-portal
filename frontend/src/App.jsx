@@ -22,6 +22,8 @@ import ProfilePage from './pages/ProfilePage';
 import ProjectsPage from './pages/projects/ProjectsPage';
 import ProjectDetailsPage from './pages/projects/ProjectDetailsPage';
 import ProjectFormPage from './pages/projects/ProjectFormPage';
+import MyRequestsPage from './pages/requests/MyRequestsPage';
+import IncomingRequestsPage from './pages/requests/IncomingRequestsPage';
 
 export default function App() {
   return (
@@ -49,6 +51,9 @@ export default function App() {
                   <Route path="/projects/new" element={<ProjectFormPage />} />
                   <Route path="/projects/:id" element={<ProjectDetailsPage />} />
                   <Route path="/projects/:id/edit" element={<ProjectFormPage />} />
+                  {/* Requests */}
+                  <Route path="/requests/my-requests" element={<MyRequestsPage />} />
+                  <Route path="/requests/incoming" element={<IncomingRequestsPage />} />
                 </Route>
               </Route>
 

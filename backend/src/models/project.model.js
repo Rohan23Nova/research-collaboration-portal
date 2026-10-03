@@ -227,11 +227,43 @@ export default {
 
   // Submit a collaboration request
   async submitRequest(projectId, userId, message) {
-    const [result] = await pool.query(`
-      INSERT INTO CollaborationRequest (project_id, applicant_id, message, status)
-      VALUES (?, ?, ?, 'Pending')
-    `, [projectId, userId, message || null]);
-    return result.insertId;
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+
+      const [result] = await connection.query(`
+        INSERT INTO CollaborationRequest (project_id, applicant_id, message, status)
+        VALUES (?, ?, ?, 'Pending')
+      `, [projectId, userId, message || null]);
+      
+      const requestId = result.insertId;
+
+      const [projectRows] = await connection.query(
+        'SELECT leader_id, title FROM ResearchProject WHERE project_id = ?', 
+        [projectId]
+      );
+      
+      const [userRows] = await connection.query('SELECT name FROM User WHERE user_id = ?', [userId]);
+
+      if (projectRows.length > 0 && userRows.length > 0) {
+        const leaderId = projectRows[0].leader_id;
+        const projectTitle = projectRows[0].title;
+        const applicantName = userRows[0].name;
+
+        await connection.query(
+          'INSERT INTO Notification (user_id, type, message, is_read) VALUES (?, ?, ?, false)',
+          [leaderId, 'NEW_REQUEST', `${applicantName} requested to join "${projectTitle}"`]
+        );
+      }
+
+      await connection.commit();
+      return requestId;
+    } catch (err) {
+      await connection.rollback();
+      throw err;
+    } finally {
+      connection.release();
+    }
   },
 
   // For frontend filter dropdowns

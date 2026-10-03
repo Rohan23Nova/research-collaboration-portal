@@ -12,6 +12,8 @@ import authRouter from './routes/auth.routes.js';
 import userRouter from './routes/user.routes.js';
 import skillRouter from './routes/skill.routes.js';
 import projectRouter from './routes/project.routes.js';
+import requestRouter from './routes/request.routes.js';
+import notificationRouter from './routes/notification.routes.js';
 
 dotenv.config();
 
@@ -36,6 +38,8 @@ app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/skills', skillRouter);
 app.use('/api/projects', projectRouter);
+app.use('/api/requests', requestRouter);
+app.use('/api/notifications', notificationRouter);
 
 // ── 404 handler ───────────────────────────────────────────────────────────
 app.use((_req, res) => {

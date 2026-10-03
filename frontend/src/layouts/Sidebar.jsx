@@ -1,13 +1,15 @@
 // frontend/src/layouts/Sidebar.jsx
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Users, MessageSquare, Settings, UserCircle } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Settings, UserCircle, FileClock, Inbox } from 'lucide-react';
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Profile', path: '/profile', icon: UserCircle },
     { name: 'Projects', path: '/projects', icon: FolderKanban },
-    { name: 'Design System', path: '/design-system', icon: Settings }, // Temporary for phase 4
+    { name: 'My Requests', path: '/requests/my-requests', icon: FileClock },
+    { name: 'Review Requests', path: '/requests/incoming', icon: Inbox },
+    { name: 'Design System', path: '/design-system', icon: Settings },
   ];
 
   return (

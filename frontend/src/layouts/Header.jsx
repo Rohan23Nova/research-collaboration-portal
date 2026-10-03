@@ -1,15 +1,44 @@
 // frontend/src/layouts/Header.jsx
-import { Menu, Bell, Search, Sun, Moon } from 'lucide-react';
+import { Menu, Bell, Search, Sun, Moon, CheckCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import Dropdown from '../components/ui/Dropdown';
 import Avatar from '../components/ui/Avatar';
 import { useLocation, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import api from '../services/api';
 
 export default function Header({ toggleSidebar }) {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
+
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  
+  useEffect(() => {
+    if (user) fetchNotifications();
+  }, [user, location.pathname]); // Refresh when navigating
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await api.get('/notifications');
+      setNotifications(res.data.data.notifications);
+      setUnreadCount(res.data.data.unreadCount);
+    } catch (err) {
+      console.error('Failed to fetch notifications');
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      await api.put('/notifications/mark-all-read');
+      setUnreadCount(0);
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: 1 })));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   // Simple breadcrumb generator from URL
   const pathnames = location.pathname.split('/').filter(x => x);
@@ -63,10 +92,48 @@ export default function Header({ toggleSidebar }) {
         </button>
 
         {/* Notifications */}
-        <button className="relative text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
-          <Bell className="h-5 w-5" />
-          <span className="absolute -right-0.5 -top-0.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-slate-950"></span>
-        </button>
+        <Dropdown
+          align="right"
+          trigger={
+            <div className="relative text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 cursor-pointer pt-1">
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-2 ring-white dark:ring-slate-950">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </div>
+          }
+        >
+          <div className="w-80">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+              <h3 className="font-semibold text-slate-900 dark:text-white">Notifications</h3>
+              {unreadCount > 0 && (
+                <button onClick={markAllAsRead} className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
+                  <CheckCheck size={14}/> Mark all read
+                </button>
+              )}
+            </div>
+            <div className="max-h-96 overflow-y-auto">
+              {notifications.length === 0 ? (
+                <div className="px-4 py-6 text-center text-sm text-slate-500">
+                  No notifications yet.
+                </div>
+              ) : (
+                notifications.map(n => (
+                  <div key={n.notification_id} className={`px-4 py-3 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${!n.is_read ? 'bg-indigo-50/50 dark:bg-indigo-500/5' : ''}`}>
+                    <p className={`text-sm ${!n.is_read ? 'font-medium text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300'}`}>
+                      {n.message}
+                    </p>
+                    <p className="text-xs text-slate-400 mt-1">
+                      {new Date(n.created_at).toLocaleDateString()} at {new Date(n.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </Dropdown>
 
         {/* User Dropdown */}
         <Dropdown
