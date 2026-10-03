@@ -14,6 +14,9 @@ import skillRouter from './routes/skill.routes.js';
 import projectRouter from './routes/project.routes.js';
 import requestRouter from './routes/request.routes.js';
 import notificationRouter from './routes/notification.routes.js';
+import adminRouter from './routes/admin.routes.js';
+import dashboardRouter from './routes/dashboard.routes.js';
+import { authenticateToken } from './middleware/auth.middleware.js';
 
 dotenv.config();
 
@@ -35,11 +38,13 @@ app.use(express.urlencoded({ extended: true }));
 // ── Routes ────────────────────────────────────────────────────────────────
 app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
-app.use('/api/users', userRouter);
-app.use('/api/skills', skillRouter);
-app.use('/api/projects', projectRouter);
-app.use('/api/requests', requestRouter);
-app.use('/api/notifications', notificationRouter);
+app.use('/api/users', authenticateToken, userRouter);
+app.use('/api/skills', authenticateToken, skillRouter);
+app.use('/api/projects', authenticateToken, projectRouter);
+app.use('/api/requests', authenticateToken, requestRouter);
+app.use('/api/notifications', authenticateToken, notificationRouter);
+app.use('/api/admin', authenticateToken, adminRouter);
+app.use('/api/dashboard', authenticateToken, dashboardRouter);
 
 // ── 404 handler ───────────────────────────────────────────────────────────
 app.use((_req, res) => {

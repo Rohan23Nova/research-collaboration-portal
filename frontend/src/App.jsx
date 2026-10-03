@@ -1,7 +1,4 @@
 // App.jsx — Root component + router
-// React Router v6: <Routes> matches the URL path and renders the right page.
-// All context providers wrap the router so every page can access them.
-
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
@@ -15,6 +12,7 @@ import HealthPage from './pages/HealthPage';
 
 // Layout & Protected components
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import RoleRoute from './components/auth/RoleRoute';
 import AppLayout from './layouts/AppLayout';
 import DashboardPage from './pages/DashboardPage';
 import DesignSystemPage from './pages/DesignSystemPage';
@@ -26,6 +24,8 @@ import WorkspacePage from './pages/projects/WorkspacePage';
 import MyRequestsPage from './pages/requests/MyRequestsPage';
 import IncomingRequestsPage from './pages/requests/IncomingRequestsPage';
 import NotificationsPage from './pages/NotificationsPage';
+import AdminUsersPage from './pages/admin/AdminUsersPage';
+import AdminSkillsPage from './pages/admin/AdminSkillsPage';
 
 export default function App() {
   return (
@@ -55,9 +55,16 @@ export default function App() {
                   <Route path="/projects/:id" element={<ProjectDetailsPage />} />
                   <Route path="/projects/:id/edit" element={<ProjectFormPage />} />
                   <Route path="/projects/:id/workspace" element={<WorkspacePage />} />
+                  
                   {/* Requests */}
                   <Route path="/requests/my-requests" element={<MyRequestsPage />} />
                   <Route path="/requests/incoming" element={<IncomingRequestsPage />} />
+
+                  {/* Admin Only */}
+                  <Route element={<RoleRoute allowedRoles={['ADMIN']} />}>
+                    <Route path="/admin/users" element={<AdminUsersPage />} />
+                    <Route path="/admin/skills" element={<AdminSkillsPage />} />
+                  </Route>
                 </Route>
               </Route>
 

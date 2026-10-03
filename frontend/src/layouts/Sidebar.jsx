@@ -1,8 +1,11 @@
 // frontend/src/layouts/Sidebar.jsx
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Settings, UserCircle, FileClock, Inbox } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Settings, UserCircle, FileClock, Inbox, Users, Award } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Sidebar({ isOpen, setIsOpen }) {
+  const { user } = useAuth();
+  
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Profile', path: '/profile', icon: UserCircle },
@@ -24,9 +27,9 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
       {/* Sidebar */}
       <aside
-        className={\`fixed inset-y-0 left-0 z-50 w-64 transform border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 \${
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        }\`}
+        }`}
       >
         <div className="flex h-14 items-center border-b border-slate-200 dark:border-slate-800 px-6">
           <div className="flex items-center gap-2">
@@ -37,24 +40,48 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           </div>
         </div>
 
-        <nav className="space-y-1 p-4">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              onClick={() => setIsOpen(false)}
-              className={({ isActive }) =>
-                \`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors \${
-                  isActive
-                    ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white'
-                }\`
-              }
-            >
-              <item.icon className="h-5 w-5" />
-              {item.name}
-            </NavLink>
-          ))}
+        <nav className="space-y-1 p-4 flex flex-col justify-between h-[calc(100vh-3.5rem)]">
+          <div>
+            {navItems.map((item) => (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                onClick={() => setIsOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white'
+                  }`
+                }
+              >
+                <item.icon className="h-5 w-5" />
+                {item.name}
+              </NavLink>
+            ))}
+            
+            {user?.role === 'ADMIN' && (
+              <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+                <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                  Administration
+                </p>
+                <NavLink
+                  to="/admin/users"
+                  onClick={() => setIsOpen(false)}
+                  className={({ isActive }) => `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isActive ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white'}`}
+                >
+                  <Users className="h-5 w-5" /> Manage Users
+                </NavLink>
+                <NavLink
+                  to="/admin/skills"
+                  onClick={() => setIsOpen(false)}
+                  className={({ isActive }) => `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isActive ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white'}`}
+                >
+                  <Award className="h-5 w-5" /> Manage Skills
+                </NavLink>
+              </div>
+            )}
+          </div>
         </nav>
       </aside>
     </>

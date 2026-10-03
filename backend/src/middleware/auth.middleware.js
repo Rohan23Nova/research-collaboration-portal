@@ -20,3 +20,12 @@ export function authenticateToken(req, res, next) {
     return sendError(res, 'Invalid or expired token.', 403);
   }
 }
+
+export function requireRole(allowedRoles) {
+  return (req, res, next) => {
+    if (!req.user || !allowedRoles.includes(req.user.role)) {
+      return sendError(res, `Access denied. Requires one of: ${allowedRoles.join(', ')}`, 403);
+    }
+    next();
+  };
+}
