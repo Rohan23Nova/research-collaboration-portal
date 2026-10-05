@@ -198,7 +198,7 @@ export default function LandingPage() {
           <img 
             src={patMandala2} 
             alt="" 
-            className="w-[640px] h-[640px] lg:w-[740px] lg:h-[740px] opacity-[0.35] dark:opacity-[0.14]"
+            className="w-[640px] h-[640px] lg:w-[740px] lg:h-[740px] opacity-[0.68] dark:opacity-[0.42]"
             style={{ filter: mandalaTerracotta }}
           />
         </div>
@@ -818,7 +818,7 @@ export default function LandingPage() {
           <img 
             src={patMandala1} 
             alt="" 
-            className="w-[620px] h-[620px] opacity-[0.35] dark:opacity-[0.12]"
+            className="w-[620px] h-[620px] opacity-[0.65] dark:opacity-[0.38]"
             style={{ filter: mandalaTerracotta }}
           />
         </div>
