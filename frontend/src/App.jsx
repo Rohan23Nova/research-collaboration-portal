@@ -57,8 +57,11 @@ export default function App() {
                   <Route path="/projects/:id/workspace" element={<WorkspacePage />} />
                   
                   {/* Requests */}
+                  <Route path="/requests" element={<Navigate to="/requests/my-requests" replace />} />
+                  <Route path="/requests/my" element={<Navigate to="/requests/my-requests" replace />} />
                   <Route path="/requests/my-requests" element={<MyRequestsPage />} />
                   <Route path="/requests/incoming" element={<IncomingRequestsPage />} />
+                  <Route path="/review-requests" element={<Navigate to="/requests/incoming" replace />} />
 
                   {/* Admin Only */}
                   <Route element={<RoleRoute allowedRoles={['ADMIN']} />}>

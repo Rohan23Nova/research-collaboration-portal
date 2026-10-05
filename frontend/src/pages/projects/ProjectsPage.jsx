@@ -1,6 +1,5 @@
-// frontend/src/pages/projects/ProjectsPage.jsx
 import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import api from '../../services/api';
@@ -18,6 +17,7 @@ import { Search, Plus, FolderSearch, Calendar, User as UserIcon } from 'lucide-r
 export default function ProjectsPage() {
   const { user } = useAuth();
   const { addToast } = useToast();
+  const [searchParams] = useSearchParams();
   const canCreate = user?.role === 'FACULTY' || user?.role === 'ADMIN';
 
   const [projects, setProjects] = useState([]);
@@ -25,12 +25,19 @@ export default function ProjectsPage() {
   const [error, setError] = useState(null);
   const [total, setTotal] = useState(0);
 
-  // Filters
-  const [search, setSearch] = useState('');
-  const [domain, setDomain] = useState('');
-  const [status, setStatus] = useState('');
+  // Filters - initialize from searchParams if present
+  const [search, setSearch] = useState(searchParams.get('search') || '');
+  const [domain, setDomain] = useState(searchParams.get('domain') || '');
+  const [status, setStatus] = useState(searchParams.get('status') || '');
   const [page, setPage] = useState(1);
   const [domainsList, setDomainsList] = useState([]);
+
+  useEffect(() => {
+    const q = searchParams.get('search');
+    if (q !== null && q !== search) setSearch(q);
+    const d = searchParams.get('domain');
+    if (d !== null && d !== domain) setDomain(d);
+  }, [searchParams]);
 
   useEffect(() => {
     fetchDomains();

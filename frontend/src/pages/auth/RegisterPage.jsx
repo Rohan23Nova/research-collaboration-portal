@@ -1,5 +1,4 @@
-// pages/auth/RegisterPage.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -9,7 +8,7 @@ import patMandala2 from '../../assets/patterns/mandala-svgrepo-com.svg';
 import { UserPlus, AlertCircle } from 'lucide-react';
 
 export default function RegisterPage() {
-  const { register } = useAuth();
+  const { register, user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -24,6 +23,12 @@ export default function RegisterPage() {
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

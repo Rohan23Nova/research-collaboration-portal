@@ -1,7 +1,7 @@
-// frontend/src/pages/public/LandingPage.jsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 
@@ -36,6 +36,7 @@ import {
 
 export default function LandingPage() {
   const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Exact Terracotta (#C96F3D) color filter from pure black SVG
@@ -101,18 +102,28 @@ export default function LandingPage() {
               {theme === 'dark' ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
             </button>
             
-            <Link 
-              to="/login" 
-              className="px-3.5 py-1.5 text-sm font-medium text-foreground-muted hover:text-foreground dark:text-[#B8B0A5] dark:hover:text-[#F4EFE6] transition-colors focus:outline-none focus-visible:underline"
-            >
-              Log In
-            </Link>
-            
-            <Link to="/register">
-              <Button size="sm" className="shadow-doodle-sm">
-                Get Started
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/dashboard">
+                <Button size="sm" className="shadow-doodle-sm gap-1.5">
+                  Dashboard <ArrowRight size={14} />
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link 
+                  to="/login" 
+                  className="px-3.5 py-1.5 text-sm font-medium text-foreground-muted hover:text-foreground dark:text-[#B8B0A5] dark:hover:text-[#F4EFE6] transition-colors focus:outline-none focus-visible:underline"
+                >
+                  Log In
+                </Link>
+                
+                <Link to="/register">
+                  <Button size="sm" className="shadow-doodle-sm">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Hamburger */}
@@ -147,12 +158,20 @@ export default function LandingPage() {
               <a href="#about" onClick={() => setMobileMenuOpen(false)} className="px-2 py-1.5 hover:text-foreground">About</a>
             </nav>
             <div className="pt-3 border-t border-border-muted/50 dark:border-[#3D3934]/50 flex gap-3">
-              <Link to="/login" className="flex-1 text-center py-2 text-sm font-medium border border-border-muted rounded-md text-foreground">
-                Log In
-              </Link>
-              <Link to="/register" className="flex-1">
-                <Button size="sm" className="w-full">Get Started</Button>
-              </Link>
+              {user ? (
+                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="w-full">
+                  <Button size="sm" className="w-full justify-center">Go to Dashboard</Button>
+                </Link>
+              ) : (
+                <>
+                  <Link to="/login" className="flex-1 text-center py-2 text-sm font-medium border border-border-muted rounded-md text-foreground">
+                    Log In
+                  </Link>
+                  <Link to="/register" className="flex-1">
+                    <Button size="sm" className="w-full">Get Started</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}

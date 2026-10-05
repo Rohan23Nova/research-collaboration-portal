@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import Dropdown from '../components/ui/Dropdown';
 import Avatar from '../components/ui/Avatar';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 
@@ -12,9 +12,11 @@ export default function Header({ toggleSidebar }) {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [headerSearch, setHeaderSearch] = useState('');
   
   useEffect(() => {
     if (user) fetchNotifications();
@@ -84,7 +86,15 @@ export default function Header({ toggleSidebar }) {
           <input
             type="search"
             aria-label="Search portal"
-            placeholder="Search..."
+            placeholder="Search projects..."
+            value={headerSearch}
+            onChange={(e) => setHeaderSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                navigate(`/projects${headerSearch.trim() ? `?search=${encodeURIComponent(headerSearch.trim())}` : ''}`);
+              }
+            }}
             className="h-8 w-36 md:w-48 lg:w-56 xl:w-64 rounded-md border-[1.5px] border-border-muted dark:border-[#575048] bg-surface dark:bg-[#211F1C] pl-8 pr-3 text-sm text-foreground dark:text-[#F4EFE6] placeholder:text-foreground-muted/70 dark:placeholder-[#8F887E] hover:border-foreground-muted dark:hover:border-[#8F887E] focus:outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:ring-offset-1 focus-visible:ring-offset-surface dark:focus-visible:ring-offset-[#24211E] transition-all duration-200"
           />
         </div>
