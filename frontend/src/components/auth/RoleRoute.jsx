@@ -9,8 +9,8 @@ export default function RoleRoute({ allowedRoles }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <Loader2 className="animate-spin text-indigo-600" size={32} />
+      <div className="min-h-screen flex items-center justify-center bg-surface-muted bg-background">
+        <Loader2 className="animate-spin text-primary" size={32} />
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-export default function Dropdown({ trigger, children, align = 'right' }) {
+export default function Dropdown({ trigger, children, align = 'right', className = '', closeOnClick = true }) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
 
@@ -8,9 +8,18 @@ export default function Dropdown({ trigger, children, align = 'right' }) {
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target)) setIsOpen(false);
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setIsOpen(false);
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
 
   return (
     <div className="relative inline-block text-left" ref={ref}>
@@ -18,12 +27,12 @@ export default function Dropdown({ trigger, children, align = 'right' }) {
         {trigger}
       </div>
       {isOpen && (
-        <div className={`absolute z-50 mt-2 w-56 origin-top-right rounded-lg bg-white dark:bg-slate-900 shadow-lg ring-1 ring-black/5 dark:ring-white/10 focus:outline-none ${align === 'right' ? 'right-0' : 'left-0'}`}>
-          <div className="py-1" onClick={() => setIsOpen(false)}>
+        <div className={`absolute z-50 mt-2 origin-top-right rounded-xl bg-surface dark:bg-[#292622] border-[1.5px] border-border-dark dark:border-[#575048] shadow-doodle focus:outline-none transition-all duration-150 motion-reduce:transition-none overflow-hidden ${align === 'right' ? 'right-0' : 'left-0'} ${className || 'w-56'}`}>
+          <div onClick={closeOnClick ? () => setIsOpen(false) : undefined}>
             {children}
           </div>
         </div>
       )}
     </div>
   );
-}\n
+}

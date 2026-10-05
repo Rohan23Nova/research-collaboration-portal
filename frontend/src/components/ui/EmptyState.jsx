@@ -1,14 +1,14 @@
 import { FolderOpen } from 'lucide-react';
 
-export default function EmptyState({ icon: Icon = FolderOpen, title = 'No data found', description, action }) {
+export default function EmptyState({ icon: Icon = FolderOpen, title = 'No data found', description, action, className = '' }) {
   return (
-    <div className="flex flex-col items-center justify-center p-8 text-center bg-slate-50 dark:bg-slate-900/50 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 mb-4">
-        <Icon className="h-6 w-6 text-slate-500 dark:text-slate-400" />
+    <div className={`flex flex-col items-center justify-center p-8 sm:p-10 text-center bg-surface dark:bg-[#292622] border-2 border-dashed border-border-muted dark:border-[#3D3934] rounded-xl transition-colors duration-200 ${className}`}>
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-[#6E4634]/40 text-primary mb-3">
+        <Icon className="h-6 w-6 text-primary" aria-hidden="true" />
       </div>
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
-      {description && <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 max-w-sm">{description}</p>}
+      <h3 className="text-base font-semibold text-foreground dark:text-[#F4EFE6]">{title}</h3>
+      {description && <p className="mt-1.5 text-sm text-foreground-muted dark:text-[#B8B0A5] max-w-md">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );
-}\n
+}

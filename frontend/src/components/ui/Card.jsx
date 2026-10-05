@@ -1,13 +1,13 @@
 export function Card({ children, className = '' }) {
   return (
-    <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden ${className}`}>
+    <div className={`bg-surface rounded-xl border-[1.5px] border-border-dark overflow-hidden transition-colors duration-200 ${className}`}>
       {children}
     </div>
   );
 }
 
 export function CardHeader({ children, className = '' }) {
-  return <div className={`px-6 py-4 border-b border-slate-100 dark:border-slate-800 ${className}`}>{children}</div>;
+  return <div className={`px-6 py-4 border-b border-border-muted ${className}`}>{children}</div>;
 }
 
 export function CardBody({ children, className = '' }) {
@@ -15,5 +15,5 @@ export function CardBody({ children, className = '' }) {
 }
 
 export function CardFooter({ children, className = '' }) {
-  return <div className={`px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 ${className}`}>{children}</div>;
-}\n
+  return <div className={`px-6 py-4 border-t border-border-muted bg-surface-muted transition-colors duration-200 ${className}`}>{children}</div>;
+}

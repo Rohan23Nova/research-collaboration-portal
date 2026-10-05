@@ -61,7 +61,7 @@ export default function ReportsTab({ projectId }) {
     <div className="space-y-6">
       
       <Card>
-        <CardHeader><h3 className="font-semibold text-slate-900 dark:text-white">Submit Progress Report</h3></CardHeader>
+        <CardHeader><h3 className="font-semibold text-foreground">Submit Progress Report</h3></CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit} className="space-y-4">
             <Textarea 
@@ -85,19 +85,20 @@ export default function ReportsTab({ projectId }) {
           <Card key={report.report_id}>
             <CardBody>
               <div className="flex items-start gap-4">
-                {report.profile_image ? (
-                  <img src={`/api/users/${report.submitted_by}/image`} className="w-10 h-10 rounded-full object-cover" />
-                ) : (
-                  <Avatar fallback={report.submitter_name} size="md" />
-                )}
+                <Avatar 
+                  src={report.profile_image ? `/api/users/${report.submitted_by}/image` : null} 
+                  fallback={report.submitter_name} 
+                  size="md" 
+                  className="w-10 h-10" 
+                />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold text-slate-900 dark:text-white">{report.submitter_name}</h4>
-                    <span className="text-xs text-slate-500">
+                    <h4 className="font-semibold text-foreground">{report.submitter_name}</h4>
+                    <span className="text-xs text-foreground-muted">
                       {new Date(report.submitted_at).toLocaleString()}
                     </span>
                   </div>
-                  <div className="prose prose-sm dark:prose-invert text-slate-600 dark:text-slate-300 whitespace-pre-wrap">
+                  <div className="prose prose-sm dark:prose-invert text-foreground whitespace-pre-wrap">
                     {report.content}
                   </div>
                 </div>
@@ -106,8 +107,9 @@ export default function ReportsTab({ projectId }) {
           </Card>
         ))}
         {reports.length === 0 && (
-          <div className="text-center text-slate-500 py-12 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
-            No progress reports submitted yet.
+          <div className="text-center text-foreground-muted py-10 bg-surface dark:bg-[#292622] rounded-xl border-2 border-dashed border-border-muted dark:border-[#3D3934]">
+            <p className="font-semibold text-foreground text-sm">No progress reports submitted yet</p>
+            <p className="text-xs text-foreground-muted mt-1">Submit your first progress report above to keep your team informed.</p>
           </div>
         )}
       </div>

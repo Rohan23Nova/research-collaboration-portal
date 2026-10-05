@@ -11,16 +11,17 @@ export default function TeamTab({ project }) {
         <Card key={member.user_id}>
           <CardBody className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              {member.profile_image ? (
-                <img src={`/api/users/${member.user_id}/image`} className="w-12 h-12 rounded-full object-cover" />
-              ) : (
-                <Avatar fallback={member.name} size="lg" />
-              )}
+              <Avatar 
+                src={member.profile_image ? `/api/users/${member.user_id}/image` : null} 
+                fallback={member.name} 
+                size="lg" 
+                className="w-12 h-12" 
+              />
               <div>
-                <Link to={`/profile/${member.user_id}`} className="text-lg font-semibold text-slate-900 dark:text-white hover:text-indigo-600 transition-colors">
+                <Link to={`/profile/${member.user_id}`} className="text-lg font-semibold text-foreground hover:text-primary transition-colors">
                   {member.name}
                 </Link>
-                <p className="text-sm text-slate-500">Joined {new Date(member.joined_at).toLocaleDateString()}</p>
+                <p className="text-sm text-foreground-muted">Joined {new Date(member.joined_at).toLocaleDateString()}</p>
               </div>
             </div>
             <Badge variant={member.role === 'Leader' ? 'primary' : 'neutral'}>{member.role}</Badge>

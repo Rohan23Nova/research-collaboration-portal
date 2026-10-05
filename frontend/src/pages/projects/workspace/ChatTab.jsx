@@ -82,16 +82,16 @@ export default function ChatTab({ projectId }) {
   };
 
   return (
-    <div className="flex flex-col h-[600px] border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900 overflow-hidden relative">
+    <div className="flex flex-col h-[600px] border border-border-muted rounded-xl bg-surface-muted overflow-hidden relative">
       
       {/* Header */}
-      <div className="bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 p-4 shrink-0 flex items-center gap-3">
-        <div className="p-2 bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 rounded-lg">
-          <MessageSquare size={20} />
+      <div className="bg-background border-b border-border-muted dark:border-[#3D3934] p-4 shrink-0 flex items-center gap-3">
+        <div className="p-2 bg-primary-soft dark:bg-[#6E4634]/40 text-primary rounded-lg">
+          <MessageSquare size={20} aria-hidden="true" />
         </div>
         <div>
-          <h3 className="font-semibold text-slate-900 dark:text-white">Project Chat</h3>
-          <p className="text-xs text-slate-500">Communicate with your team in real-time.</p>
+          <h3 className="font-semibold text-foreground">Project Chat</h3>
+          <p className="text-xs text-foreground-muted">Communicate with your team in real-time.</p>
         </div>
       </div>
 
@@ -103,14 +103,17 @@ export default function ChatTab({ projectId }) {
       >
         {initialLoading ? (
           <div className="space-y-4 pt-4">
-            <Skeleton className="h-20 w-3/4 rounded-xl" />
-            <Skeleton className="h-20 w-3/4 rounded-xl ml-auto" />
-            <Skeleton className="h-20 w-3/4 rounded-xl" />
+            <Skeleton className="h-16 w-3/4 rounded-xl" />
+            <Skeleton className="h-16 w-3/4 rounded-xl ml-auto" />
+            <Skeleton className="h-16 w-3/4 rounded-xl" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-3">
-            <MessageSquare size={48} className="text-slate-300 dark:text-slate-700" />
-            <p>No messages yet. Start the conversation!</p>
+          <div className="h-full flex flex-col items-center justify-center text-center p-8">
+            <div className="p-3 bg-primary-soft dark:bg-[#6E4634]/40 text-primary rounded-full mb-3">
+              <MessageSquare size={28} aria-hidden="true" />
+            </div>
+            <p className="text-sm font-semibold text-foreground">No messages yet</p>
+            <p className="text-xs text-foreground-muted mt-1 max-w-xs">Start the conversation with your fellow researchers below.</p>
           </div>
         ) : (
           <>
@@ -127,19 +130,19 @@ export default function ChatTab({ projectId }) {
                     )}
                     
                     <div className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}>
-                      {!isMine && <span className="text-xs text-slate-500 mb-1 ml-1">{msg.sender_name}</span>}
+                      {!isMine && <span className="text-xs text-foreground-muted mb-1 ml-1">{msg.sender_name}</span>}
                       
                       <div 
                         className={`px-4 py-2 rounded-2xl ${
                           isMine 
-                            ? 'bg-indigo-600 text-white rounded-tr-none' 
-                            : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-tl-none'
+                            ? 'bg-primary text-surface dark:text-[#F4EFE6] rounded-tr-none' 
+                            : 'bg-surface dark:bg-[#292622] text-foreground dark:text-[#F4EFE6] border border-border-muted dark:border-[#3D3934] rounded-tl-none'
                         }`}
                       >
                         <p className="text-sm break-words whitespace-pre-wrap">{msg.message}</p>
                       </div>
                       
-                      <span className="text-[10px] text-slate-400 mt-1 mx-1">
+                      <span className="text-[10px] text-foreground-muted mt-1 mx-1">
                         {new Date(msg.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
@@ -153,23 +156,24 @@ export default function ChatTab({ projectId }) {
       </div>
 
       {/* Input Area */}
-      <div className="bg-white dark:bg-slate-950 p-4 border-t border-slate-200 dark:border-slate-800 shrink-0">
-        <form onSubmit={handleSend} className="flex items-end gap-3">
+      <div className="bg-background border-t border-border-muted dark:border-[#3D3934] p-3 sm:p-4 shrink-0">
+        <form onSubmit={handleSend} className="flex items-center gap-2 sm:gap-3">
           <div className="flex-1">
             <Input 
               placeholder="Type a message..." 
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              className="rounded-full bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-800"
+              className="rounded-full"
+              aria-label="Chat message input"
             />
           </div>
           <Button 
             type="submit" 
             disabled={!newMessage.trim() || sending} 
-            className="rounded-full h-10 w-10 p-0 flex items-center justify-center shrink-0 shadow-sm"
-            aria-label="Send Message"
+            className="rounded-full h-9 w-9 p-0 flex items-center justify-center shrink-0 shadow-sm"
+            aria-label="Send message"
           >
-            <Send size={18} className={newMessage.trim() ? "ml-1" : ""} />
+            <Send size={15} className={newMessage.trim() ? "ml-0.5" : ""} aria-hidden="true" />
           </Button>
         </form>
       </div>

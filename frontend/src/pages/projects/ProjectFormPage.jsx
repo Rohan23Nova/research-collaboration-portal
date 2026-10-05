@@ -10,6 +10,7 @@ import Select from '../../components/ui/Select';
 import Textarea from '../../components/ui/Textarea';
 import { Card, CardHeader, CardBody } from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
+import Skeleton from '../../components/ui/Skeleton';
 import { ArrowLeft, X, Search } from 'lucide-react';
 
 export default function ProjectFormPage() {
@@ -75,8 +76,8 @@ export default function ProjectFormPage() {
 
   const searchSkills = async () => {
     try {
-      const res = await api.get(`/skills?q=${skillQuery}`);
-      setSkillResults(res.data.data.skills);
+      const res = await api.get(`/skills?q=${encodeURIComponent(skillQuery)}`);
+      setSkillResults(res.data.data.skills || []);
     } catch (err) {
       console.error(err);
     }
@@ -109,11 +110,11 @@ export default function ProjectFormPage() {
     try {
       if (isEdit) {
         await api.put(`/projects/${id}`, payload);
-        addToast('Project updated', 'success');
+        addToast('Project updated successfully', 'success');
         navigate(`/projects/${id}`);
       } else {
         const res = await api.post('/projects', payload);
-        addToast('Project created', 'success');
+        addToast('Project created successfully', 'success');
         navigate(`/projects/${res.data.data.project_id}`);
       }
     } catch (err) {
@@ -123,24 +124,53 @@ export default function ProjectFormPage() {
     }
   };
 
-  if (loading) return null; // Or a skeleton
+  if (loading) {
+    return (
+      <div className="max-w-3xl mx-auto pb-12 sm:pb-16 space-y-6">
+        <Skeleton className="h-5 w-24 mb-6" />
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-7 w-56" />
+          </CardHeader>
+          <CardBody className="space-y-6">
+            <Skeleton className="h-10 w-full" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <div className="flex justify-end gap-3 pt-4">
+              <Skeleton className="h-10 w-24" />
+              <Skeleton className="h-10 w-32" />
+            </div>
+          </CardBody>
+        </Card>
+      </div>
+    );
+  }
 
   // Only faculty/admin can create
   if (!isEdit && user?.role !== 'FACULTY' && user?.role !== 'ADMIN') {
     return (
-      <div className="p-8 text-center text-red-600">You don't have permission to create projects.</div>
+      <div className="p-8 text-center text-red-600 dark:text-red-400">
+        You don't have permission to create projects.
+      </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto pb-20">
-      <Link to={isEdit ? `/projects/${id}` : '/projects'} className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white mb-6 transition-colors">
-        <ArrowLeft size={16} /> Back
+    <div className="max-w-3xl mx-auto pb-12 sm:pb-16">
+      <Link 
+        to={isEdit ? `/projects/${id}` : '/projects'} 
+        className="inline-flex items-center gap-2 text-sm font-medium text-foreground-muted hover:text-foreground dark:text-foreground-muted dark:hover:text-[#F4EFE6] mb-6 transition-colors duration-150 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      >
+        <ArrowLeft size={16} aria-hidden="true" /> Back
       </Link>
 
       <Card>
         <CardHeader>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-xl font-bold text-foreground">
             {isEdit ? 'Edit Research Project' : 'Create New Research Project'}
           </h1>
         </CardHeader>
@@ -149,18 +179,40 @@ export default function ProjectFormPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Project Title</label>
-                <Input required value={form.title} onChange={e => setForm({...form, title: e.target.value})} />
+                <label htmlFor="project-title" className="block text-sm font-medium text-foreground mb-1.5">
+                  Project Title <span className="text-primary">*</span>
+                </label>
+                <Input 
+                  id="project-title"
+                  required 
+                  value={form.title} 
+                  onChange={e => setForm({...form, title: e.target.value})} 
+                  placeholder="e.g. Autonomous Robotic Navigation in Unstructured Environments"
+                />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Research Domain</label>
-                <Input required value={form.research_domain} onChange={e => setForm({...form, research_domain: e.target.value})} placeholder="e.g. Artificial Intelligence" />
+                <label htmlFor="research-domain" className="block text-sm font-medium text-foreground mb-1.5">
+                  Research Domain <span className="text-primary">*</span>
+                </label>
+                <Input 
+                  id="research-domain"
+                  required 
+                  value={form.research_domain} 
+                  onChange={e => setForm({...form, research_domain: e.target.value})} 
+                  placeholder="e.g. Artificial Intelligence" 
+                />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Status</label>
-                <Select value={form.status} onChange={e => setForm({...form, status: e.target.value})}>
+                <label htmlFor="project-status" className="block text-sm font-medium text-foreground mb-1.5">
+                  Status
+                </label>
+                <Select 
+                  id="project-status"
+                  value={form.status} 
+                  onChange={e => setForm({...form, status: e.target.value})}
+                >
                   <option value="Planning">Planning</option>
                   <option value="Active">Active</option>
                   <option value="On Hold">On Hold</option>
@@ -170,62 +222,91 @@ export default function ProjectFormPage() {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Detailed Description</label>
-                <Textarea rows={6} value={form.description} onChange={e => setForm({...form, description: e.target.value})} />
+                <label htmlFor="project-description" className="block text-sm font-medium text-foreground mb-1.5">
+                  Detailed Description
+                </label>
+                <Textarea 
+                  id="project-description"
+                  rows={5} 
+                  value={form.description} 
+                  onChange={e => setForm({...form, description: e.target.value})} 
+                  placeholder="Outline the project goals, methodology, and expected outcomes..."
+                />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Target Deadline (Optional)</label>
-                <Input type="date" value={form.deadline} onChange={e => setForm({...form, deadline: e.target.value})} />
+                <label htmlFor="project-deadline" className="block text-sm font-medium text-foreground mb-1.5">
+                  Target Deadline (Optional)
+                </label>
+                <Input 
+                  id="project-deadline"
+                  type="date" 
+                  value={form.deadline} 
+                  onChange={e => setForm({...form, deadline: e.target.value})} 
+                />
               </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Required Skills</label>
-                
-                {/* Selected Skills */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {selectedSkills.map(skill => (
-                    <Badge key={skill.skill_id} variant="neutral" className="pr-1 flex items-center gap-1">
-                      {skill.skill_name}
-                      <button type="button" onClick={() => removeSkill(skill.skill_id)} className="hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full p-0.5">
-                        <X size={12} />
-                      </button>
-                    </Badge>
-                  ))}
-                  {selectedSkills.length === 0 && <span className="text-sm text-slate-500">No skills selected</span>}
-                </div>
-
-                {/* Skill Search */}
-                <div className="relative">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                    <Input 
-                      placeholder="Search and add skills..." 
-                      className="pl-9"
-                      value={skillQuery}
-                      onChange={e => setSkillQuery(e.target.value)}
-                    />
-                  </div>
-                  {skillResults.length > 0 && (
-                    <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                      {skillResults.map(skill => (
-                        <div 
-                          key={skill.skill_id}
-                          className="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer text-sm text-slate-700 dark:text-slate-200"
-                          onClick={() => addSkill(skill)}
-                        >
-                          {skill.skill_name}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <p className="text-xs text-slate-500 mt-2">To create a new skill, a user must add it to their profile first.</p>
-              </div>
-
             </div>
 
-            <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 dark:border-slate-800">
+            {/* Skill Tags */}
+            <div className="border-t border-border-muted dark:border-[#3D3934] pt-6">
+              <label className="block text-sm font-medium text-foreground mb-1.5">
+                Required Skills
+              </label>
+              <p className="text-xs text-foreground-muted mb-3">
+                Specify competencies prospective collaborators should have.
+              </p>
+
+              {/* Selected skills pills */}
+              <div className="flex flex-wrap gap-2 mb-3 min-h-[32px]">
+                {selectedSkills.map(skill => (
+                  <Badge key={skill.skill_id} variant="neutral" className="gap-1.5 pr-1 py-1">
+                    <span>{skill.skill_name}</span>
+                    <button 
+                      type="button" 
+                      onClick={() => removeSkill(skill.skill_id)}
+                      aria-label={`Remove ${skill.skill_name}`}
+                      className="hover:text-red-600 rounded-full p-0.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                    >
+                      <X size={12} />
+                    </button>
+                  </Badge>
+                ))}
+                {selectedSkills.length === 0 && (
+                  <span className="text-xs text-foreground-muted italic py-1">No skills added yet.</span>
+                )}
+              </div>
+
+              {/* Search input with results popup */}
+              <div className="relative">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground-muted pointer-events-none" aria-hidden="true" />
+                  <Input 
+                    type="search"
+                    placeholder="Search platform skills (type at least 2 letters)..."
+                    value={skillQuery}
+                    onChange={e => setSkillQuery(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+
+                {skillResults.length > 0 && (
+                  <div className="absolute z-20 left-0 right-0 mt-1 bg-surface dark:bg-[#292622] border-[1.5px] border-border-dark dark:border-[#575048] rounded-lg shadow-doodle max-h-48 overflow-y-auto">
+                    {skillResults.map(s => (
+                      <button
+                        type="button"
+                        key={s.skill_id}
+                        onClick={() => addSkill(s)}
+                        className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-surface-muted dark:hover:bg-[#34302B] transition-colors duration-150 focus:outline-none focus:bg-surface-muted"
+                      >
+                        {s.skill_name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-6 border-t border-border-muted dark:border-[#3D3934]">
               <Link to={isEdit ? `/projects/${id}` : '/projects'}>
                 <Button type="button" variant="ghost">Cancel</Button>
               </Link>
@@ -233,6 +314,7 @@ export default function ProjectFormPage() {
                 {saving ? 'Saving...' : (isEdit ? 'Save Changes' : 'Create Project')}
               </Button>
             </div>
+
           </form>
         </CardBody>
       </Card>

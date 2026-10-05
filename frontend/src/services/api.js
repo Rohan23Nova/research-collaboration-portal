@@ -1,9 +1,22 @@
-// services/api.js — Axios instance
+// services/api.js — Axios instance with error normalization
 import axios from 'axios';
+
+export function extractErrorMessage(error, fallback = 'An unexpected error occurred') {
+  if (error.response?.data?.message) {
+    return error.response.data.message;
+  }
+  if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+    return error.response.data.errors.map(e => e.message || e.msg).join(', ');
+  }
+  if (error.message) {
+    return error.message;
+  }
+  return fallback;
+}
 
 const api = axios.create({
   baseURL: '/api',
-  timeout: 10000,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -18,21 +31,25 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 Unauthorized globally
+// Handle unauthorized/expired token globally and normalize error message
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // If the backend says the token is invalid/expired
-    if (error.response && error.response.status === 401) {
-      // Don't auto-logout if we're explicitly trying to login/register (they return 401 for bad creds)
-      const isAuthEndpoint = error.config.url.includes('/auth/login') || error.config.url.includes('/auth/register');
-      
-      if (!isAuthEndpoint) {
-        localStorage.removeItem('rcp_token');
-        // Dispatch a custom event that AuthContext will listen to
-        window.dispatchEvent(new Event('rcp_unauthorized'));
-      }
+    // Attach normalized userMessage to error
+    error.userMessage = extractErrorMessage(error);
+
+    const isAuthEndpoint = error.config?.url?.includes('/auth/login') || error.config?.url?.includes('/auth/register');
+    
+    // Check for 401 or 403 token expiration
+    const isTokenExpired = 
+      error.response?.status === 401 || 
+      (error.response?.status === 403 && typeof error.response?.data?.message === 'string' && error.response.data.message.toLowerCase().includes('token'));
+
+    if (isTokenExpired && !isAuthEndpoint) {
+      localStorage.removeItem('rcp_token');
+      window.dispatchEvent(new Event('rcp_unauthorized'));
     }
+
     return Promise.reject(error);
   }
 );

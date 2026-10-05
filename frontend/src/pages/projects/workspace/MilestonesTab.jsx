@@ -121,33 +121,34 @@ export default function MilestonesTab({ projectId, isLeader }) {
       )}
 
       {milestones.length === 0 ? (
-        <div className="text-center text-slate-500 py-12 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
-          No milestones defined yet.
+        <div className="text-center text-foreground-muted py-10 bg-surface dark:bg-[#292622] rounded-xl border-2 border-dashed border-border-muted dark:border-[#3D3934]">
+          <p className="font-semibold text-foreground text-sm">No milestones defined yet</p>
+          <p className="text-xs text-foreground-muted mt-1">Milestones and tasks will appear here as they are established.</p>
         </div>
       ) : (
         <div className="space-y-4">
           {milestones.map(m => (
             <Card key={m.milestone_id} className="overflow-hidden">
               <div 
-                className="bg-slate-50 dark:bg-slate-900 px-4 py-3 flex items-center justify-between cursor-pointer border-b border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition-colors"
+                className="bg-surface-muted dark:bg-[#24211E] px-4 py-3 flex items-center justify-between cursor-pointer border-b border-transparent hover:border-border-muted transition-colors duration-150"
                 onClick={() => toggleExpand(m.milestone_id)}
               >
                 <div className="flex items-center gap-3">
-                  {expanded[m.milestone_id] ? <ChevronDown size={20} className="text-slate-400" /> : <ChevronRight size={20} className="text-slate-400" />}
+                  {expanded[m.milestone_id] ? <ChevronDown size={20} className="text-foreground-muted" /> : <ChevronRight size={20} className="text-foreground-muted" />}
                   <div>
-                    <h3 className="font-semibold text-slate-900 dark:text-white">{m.title}</h3>
-                    <p className="text-xs text-slate-500">Due: {new Date(m.due_date).toLocaleDateString()}</p>
+                    <h3 className="font-semibold text-foreground">{m.title}</h3>
+                    <p className="text-xs text-foreground-muted">Due: {new Date(m.due_date).toLocaleDateString()}</p>
                   </div>
                 </div>
                 <Badge variant={m.status === 'Completed' ? 'success' : 'neutral'}>{m.status}</Badge>
               </div>
               
               {expanded[m.milestone_id] && (
-                <CardBody className="bg-white dark:bg-slate-950 p-4 border-t border-slate-100 dark:border-slate-800">
-                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">{m.description}</p>
+                <CardBody className="bg-surface dark:bg-[#292622] p-4 border-t border-border-muted dark:border-[#3D3934]">
+                  <p className="text-sm text-foreground-muted dark:text-[#B8B0A5] mb-6 leading-relaxed">{m.description}</p>
                   
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-medium text-slate-900 dark:text-white">Tasks</h4>
+                    <h4 className="font-medium text-foreground">Tasks</h4>
                     {isLeader && (
                       <Button variant="ghost" size="sm" onClick={() => { setActiveMilestoneId(m.milestone_id); setShowTModal(true); }}>
                         <Plus size={14} className="mr-1"/> Add Task
@@ -159,10 +160,10 @@ export default function MilestonesTab({ projectId, isLeader }) {
                     {m.tasks?.map(t => {
                       const canEditStatus = isLeader || t.assigned_to === user.user_id || user.role === 'ADMIN';
                       return (
-                        <div key={t.task_id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-800 transition-colors">
+                        <div key={t.task_id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-lg border border-border-muted dark:border-[#3D3934] hover:border-primary/50 dark:hover:border-primary/50 transition-colors duration-150 bg-surface-muted/30 dark:bg-[#24211E]/40">
                           <div className="flex-1">
-                            <h5 className="font-medium text-slate-900 dark:text-white mb-1">{t.title}</h5>
-                            <p className="text-xs text-slate-500 line-clamp-1">{t.description}</p>
+                            <h5 className="font-medium text-foreground mb-1">{t.title}</h5>
+                            <p className="text-xs text-foreground-muted line-clamp-1">{t.description}</p>
                           </div>
                           
                           <div className="flex items-center gap-4 shrink-0">
@@ -175,10 +176,10 @@ export default function MilestonesTab({ projectId, isLeader }) {
                                 )}
                               </div>
                             ) : (
-                              <span className="text-xs text-slate-400">Unassigned</span>
+                              <span className="text-xs text-foreground-muted">Unassigned</span>
                             )}
                             
-                            <div className="text-xs text-slate-500 w-24 text-right">
+                            <div className="text-xs text-foreground-muted w-24 text-right">
                               Due {new Date(t.due_date).toLocaleDateString()}
                             </div>
 
@@ -199,7 +200,7 @@ export default function MilestonesTab({ projectId, isLeader }) {
                         </div>
                       );
                     })}
-                    {(!m.tasks || m.tasks.length === 0) && <p className="text-xs text-slate-500">No tasks created yet.</p>}
+                    {(!m.tasks || m.tasks.length === 0) && <p className="text-xs text-foreground-muted">No tasks created yet.</p>}
                   </div>
                 </CardBody>
               )}

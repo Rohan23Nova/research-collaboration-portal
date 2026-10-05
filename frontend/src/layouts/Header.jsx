@@ -50,90 +50,116 @@ export default function Header({ toggleSidebar }) {
   });
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 px-4 backdrop-blur-md sm:px-6">
-      <div className="flex items-center gap-4">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border-muted dark:border-[#4A443D] bg-surface/95 dark:bg-[#24211E]/95 px-4 backdrop-blur-md sm:px-6 transition-colors duration-200">
+      <div className="flex items-center gap-4 min-w-0">
         <button
+          type="button"
           onClick={toggleSidebar}
-          className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 lg:hidden"
+          aria-label="Open navigation menu"
+          className="p-1 rounded-md text-foreground-muted hover:text-foreground dark:text-[#B8B0A5] dark:hover:text-[#F4EFE6] hover:bg-surface-muted dark:hover:bg-[#34302B] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors duration-150 lg:hidden shrink-0"
         >
           <Menu className="h-5 w-5" />
         </button>
 
         {/* Breadcrumbs */}
-        <nav className="hidden sm:flex text-sm font-medium text-slate-500 dark:text-slate-400">
-          <ol className="flex items-center space-x-2">
+        <nav className="hidden sm:flex text-sm font-medium text-foreground-muted min-w-0" aria-label="Breadcrumb">
+          <ol className="flex items-center space-x-2 truncate">
             {breadcrumbs.map((crumb, index) => (
-              <li key={crumb.path} className="flex items-center space-x-2">
-                {index > 0 && <span className="text-slate-300 dark:text-slate-700">/</span>}
-                <span className={index === breadcrumbs.length - 1 ? "text-slate-900 dark:text-slate-100" : ""}>
+              <li key={crumb.path} className="flex items-center space-x-2 shrink-0">
+                {index > 0 && <span className="text-border-muted dark:text-[#575048]" aria-hidden="true">/</span>}
+                <span className={index === breadcrumbs.length - 1 ? "text-foreground dark:text-[#F4EFE6] font-semibold" : "dark:text-[#B8B0A5]"}>
                   {crumb.name}
                 </span>
               </li>
             ))}
-            {breadcrumbs.length === 0 && <li className="text-slate-900 dark:text-slate-100">Home</li>}
+            {breadcrumbs.length === 0 && <li className="text-foreground dark:text-[#F4EFE6] font-semibold shrink-0">Home</li>}
           </ol>
         </nav>
       </div>
 
-      <div className="flex items-center gap-4">
-        {/* Search */}
+      <div className="flex items-center gap-2.5 sm:gap-4 shrink-0">
+        {/* Search UX */}
         <div className="relative hidden sm:block">
-          <Search className="absolute left-2.5 top-2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground-muted dark:text-[#B8B0A5] pointer-events-none" aria-hidden="true" />
           <input
-            type="text"
+            type="search"
+            aria-label="Search portal"
             placeholder="Search..."
-            className="h-8 w-64 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 pl-8 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-200"
+            className="h-8 w-36 md:w-48 lg:w-56 xl:w-64 rounded-md border-[1.5px] border-border-muted dark:border-[#575048] bg-surface dark:bg-[#211F1C] pl-8 pr-3 text-sm text-foreground dark:text-[#F4EFE6] placeholder:text-foreground-muted/70 dark:placeholder-[#8F887E] hover:border-foreground-muted dark:hover:border-[#8F887E] focus:outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:ring-offset-1 focus-visible:ring-offset-surface dark:focus-visible:ring-offset-[#24211E] transition-all duration-200"
           />
         </div>
 
         {/* Theme Toggle */}
-        <button onClick={toggleTheme} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
-          {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        <button 
+          type="button"
+          onClick={toggleTheme} 
+          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          className="p-1.5 rounded-lg text-foreground-muted dark:text-[#B8B0A5] hover:text-foreground dark:hover:text-[#F4EFE6] hover:bg-surface-muted dark:hover:bg-[#34302B] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface dark:focus-visible:ring-offset-[#24211E] transition-colors duration-150"
+        >
+          {theme === 'dark' ? <Sun className="h-5 w-5 text-primary" aria-hidden="true" /> : <Moon className="h-5 w-5" aria-hidden="true" />}
         </button>
 
         {/* Notifications */}
         <Dropdown
           align="right"
+          className="w-80 max-w-[calc(100vw-2rem)] sm:w-96"
+          closeOnClick={false}
           trigger={
-            <div className="relative text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 cursor-pointer pt-1">
-              <Bell className="h-5 w-5" />
+            <button
+              type="button"
+              aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
+              className="relative p-1.5 rounded-lg text-foreground-muted hover:text-foreground dark:text-[#B8B0A5] dark:hover:text-[#F4EFE6] hover:bg-surface-muted dark:hover:bg-[#34302B] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface dark:focus-visible:ring-offset-[#24211E] transition-colors duration-150 cursor-pointer"
+            >
+              <Bell className="h-5 w-5" aria-hidden="true" />
               {unreadCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-2 ring-white dark:ring-slate-950">
+                <span className="absolute right-0.5 top-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-surface ring-2 ring-surface dark:ring-[#24211E]">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
-            </div>
+            </button>
           }
         >
-          <div className="w-80">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-800">
-              <h3 className="font-semibold text-slate-900 dark:text-white">Notifications</h3>
+          <div className="w-full">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border-muted dark:border-[#3D3934] bg-surface-muted/50 dark:bg-[#211F1C]/50">
+              <h3 className="font-semibold text-sm text-foreground dark:text-[#F4EFE6]">Notifications</h3>
               {unreadCount > 0 && (
-                <button onClick={markAllAsRead} className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    markAllAsRead();
+                  }}
+                  className="text-xs text-primary hover:underline flex items-center gap-1 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded transition-colors"
+                >
                   <CheckCheck size={14}/> Mark all read
                 </button>
               )}
             </div>
-            <div className="max-h-96 overflow-y-auto">
+            <div className="max-h-80 overflow-y-auto divide-y divide-border-muted/50 dark:divide-[#3D3934]/50">
               {notifications.length === 0 ? (
-                <div className="px-4 py-6 text-center text-sm text-slate-500">
+                <div className="px-4 py-8 text-center text-sm text-foreground-muted dark:text-[#B8B0A5]">
                   No notifications yet.
                 </div>
               ) : (
                 notifications.map(n => (
-                  <div key={n.notification_id} className={`px-4 py-3 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${!n.is_read ? 'bg-indigo-50/50 dark:bg-indigo-500/5' : ''}`}>
-                    <p className={`text-sm ${!n.is_read ? 'font-medium text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300'}`}>
+                  <div
+                    key={n.notification_id}
+                    className={`p-4 hover:bg-surface-muted dark:hover:bg-[#34302B] transition-colors duration-150 ${
+                      !n.is_read ? 'bg-primary-soft/25 dark:bg-[#6E4634]/20' : ''
+                    }`}
+                  >
+                    <p className={`text-xs sm:text-sm leading-relaxed break-words ${!n.is_read ? 'font-medium text-foreground dark:text-[#F4EFE6]' : 'text-foreground-muted dark:text-[#B8B0A5]'}`}>
                       {n.message}
                     </p>
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-[11px] text-foreground-muted/70 dark:text-[#8F887E] mt-1.5 flex items-center gap-1">
                       {new Date(n.created_at).toLocaleDateString()} at {new Date(n.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                     </p>
                   </div>
                 ))
               )}
             </div>
-            <div className="border-t border-slate-100 dark:border-slate-800 p-2 text-center">
-              <Link to="/notifications" className="text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+            <div className="border-t border-border-muted dark:border-[#3D3934] p-2.5 text-center bg-surface-muted/30 dark:bg-[#211F1C]/30">
+              <Link to="/notifications" className="text-xs sm:text-sm text-primary font-medium hover:underline inline-block py-0.5">
                 View all notifications
               </Link>
             </div>
@@ -144,26 +170,30 @@ export default function Header({ toggleSidebar }) {
         <Dropdown
           align="right"
           trigger={
-            <div className="flex items-center gap-2 cursor-pointer pl-2">
+            <button 
+              type="button"
+              aria-label={`User account options: ${user?.name || 'User'}`}
+              className="flex items-center gap-2 p-0.5 rounded-full hover:ring-2 hover:ring-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface dark:focus-visible:ring-offset-[#24211E] transition-all duration-150 cursor-pointer"
+            >
               {user?.profile_image ? (
-                <img src={\`/api/users/\${user.user_id}/image\`} className="w-8 h-8 rounded-full object-cover" />
+                <img src={`/api/users/${user.user_id}/image`} alt={user?.name || ''} className="w-8 h-8 rounded-full object-cover" />
               ) : (
                 <Avatar size="sm" fallback={user?.name || 'U'} />
               )}
-            </div>
+            </button>
           }
         >
-          <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
-            <p className="text-sm font-medium text-slate-900 dark:text-white">{user?.name}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user?.email}</p>
+          <div className="px-4 py-3 border-b border-border-muted dark:border-[#3D3934]">
+            <p className="text-sm font-medium text-foreground dark:text-[#F4EFE6]">{user?.name}</p>
+            <p className="text-xs text-foreground-muted dark:text-[#B8B0A5] truncate">{user?.email}</p>
           </div>
-          <div className="py-1 border-b border-slate-100 dark:border-slate-800">
-            <Link to="/profile" className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+          <div className="py-1 border-b border-border-muted dark:border-[#3D3934]">
+            <Link to="/profile" className="block px-4 py-2 text-sm text-foreground-muted dark:text-[#B8B0A5] hover:bg-surface-muted dark:hover:bg-[#34302B] hover:text-foreground dark:hover:text-[#F4EFE6] transition-colors duration-150">
               My Profile
             </Link>
           </div>
           <div className="py-1">
-            <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+            <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors duration-150">
               Sign out
             </button>
           </div>

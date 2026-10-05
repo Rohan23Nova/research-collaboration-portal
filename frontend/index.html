@@ -1,15 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="light">
   <head>
     <meta charset="UTF-8" />
+    <!-- Theme: apply correct class BEFORE first paint to avoid flash -->
+    <script>
+      (function () {
+        var v = localStorage.getItem('rcp_theme_v2');
+        // v2 key = explicitly toggled by user. Default to 'light' if never explicitly set.
+        if (v === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+        // Clean up any legacy auto-dark keys from previous builds
+        try { localStorage.removeItem('rcp_theme'); } catch(e) {}
+        try { localStorage.removeItem('rcp_theme_mode'); } catch(e) {}
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Research Collaboration Portal</title>
-    <!-- Inter font from Google Fonts — our design system uses this exclusively -->
+    <!-- Restrained editorial typography: DM Sans (Primary UI) & Lora (Page Headings) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Lora:wght@600&display=swap"
       rel="stylesheet"
     />
   </head>

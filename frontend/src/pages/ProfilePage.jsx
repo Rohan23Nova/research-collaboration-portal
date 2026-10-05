@@ -1,5 +1,5 @@
 // frontend/src/pages/ProfilePage.jsx
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -11,6 +11,7 @@ import Textarea from '../components/ui/Textarea';
 import Badge from '../components/ui/Badge';
 import { Card, CardHeader, CardBody } from '../components/ui/Card';
 import Skeleton from '../components/ui/Skeleton';
+import ErrorState from '../components/ui/ErrorState';
 import { Camera, Plus, X } from 'lucide-react';
 
 export default function ProfilePage() {
@@ -25,6 +26,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Edit states
   const [isEditing, setIsEditing] = useState(false);
@@ -38,27 +40,29 @@ export default function ProfilePage() {
 
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    fetchProfile();
-  }, [profileId]);
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
       const res = await api.get(`/users/${profileId}`);
       setProfile(res.data.data.user);
-      setSkills(res.data.data.skills);
+      setSkills(res.data.data.skills || []);
       setEditForm({
         name: res.data.data.user.name || '',
         bio: res.data.data.user.bio || '',
         institution: res.data.data.user.institution || ''
       });
     } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load profile');
       addToast(err.response?.data?.message || 'Failed to load profile', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [profileId, addToast]);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -110,9 +114,9 @@ export default function ProfilePage() {
         skill_name: skillInput.trim(),
         is_interest: isInterest
       });
-      setSkills(res.data.data.skills);
+      setSkills(res.data.data.skills || []);
       setSkillInput('');
-      addToast('Skill added', 'success');
+      addToast('Skill added successfully', 'success');
     } catch (err) {
       addToast(err.response?.data?.message || 'Failed to add skill', 'error');
     } finally {
@@ -132,43 +136,68 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
-        <Skeleton className="h-48 w-full rounded-xl" />
+      <div className="max-w-4xl mx-auto space-y-6 pb-12 sm:pb-16">
+        <Card>
+          <CardBody className="flex flex-col md:flex-row items-center gap-6 p-6">
+            <Skeleton className="w-24 h-24 rounded-full shrink-0" />
+            <div className="space-y-3 flex-1 text-center md:text-left">
+              <Skeleton className="h-7 w-48 mx-auto md:mx-0 rounded" />
+              <Skeleton className="h-4 w-36 mx-auto md:mx-0 rounded" />
+              <Skeleton className="h-4 w-56 mx-auto md:mx-0 rounded" />
+            </div>
+            <Skeleton className="h-10 w-28 rounded-md" />
+          </CardBody>
+        </Card>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Skeleton className="h-64 col-span-2 rounded-xl" />
-          <Skeleton className="h-64 col-span-1 rounded-xl" />
+          <Skeleton className="h-64 md:col-span-2 rounded-xl" />
+          <Skeleton className="h-64 md:col-span-1 rounded-xl" />
         </div>
       </div>
     );
   }
 
-  if (!profile) return null;
+  if (error || !profile) {
+    return (
+      <div className="max-w-4xl mx-auto pb-12 sm:pb-16 space-y-6">
+        <ErrorState 
+          title="Could not load profile"
+          message={error || 'An error occurred while loading this profile.'}
+          onRetry={fetchProfile}
+        />
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-20">
+    <div className="max-w-4xl mx-auto space-y-6 pb-12 sm:pb-16">
       
+      {/* Page Heading */}
+      <div className="mb-2">
+        <h1 className="text-3xl sm:text-4xl font-semibold font-serif text-foreground tracking-tight leading-tight">Profile</h1>
+        <p className="mt-1.5 text-sm sm:text-base text-foreground-muted">Academic credentials, research interests, and competencies.</p>
+      </div>
+
       {/* Profile Header Card */}
       <Card>
-        <CardBody className="flex flex-col md:flex-row items-center gap-6">
-          <div className="relative group">
-            {profile.profile_image ? (
-              <img 
-                src={`/api/users/${profileId}/image`}
-                alt={profile.name} 
-                className="w-24 h-24 rounded-full object-cover border-4 border-slate-50 dark:border-slate-800 shadow-sm"
-              />
-            ) : (
-              <Avatar fallback={profile.name} size="lg" className="w-24 h-24 text-2xl" />
-            )}
+        <CardBody className="flex flex-col md:flex-row items-center gap-6 p-6">
+          <div className="relative group shrink-0">
+            <Avatar 
+              src={profile.profile_image ? `/api/users/${profileId}/image?t=${profile.profile_image}` : null}
+              fallback={profile.name} 
+              size="lg" 
+              className="w-24 h-24 text-2xl border-[3px] border-border-muted dark:border-[#575048] shadow-xs" 
+            />
             
             {isOwner && (
               <>
-                <div 
+                <button 
+                  type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
+                  aria-label="Upload profile image"
+                  className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 focus-visible:opacity-100 cursor-pointer transition-opacity duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
-                  <Camera className="text-white" size={24} />
-                </div>
+                  <Camera className="text-white" size={24} aria-hidden="true" />
+                </button>
                 <input 
                   type="file" 
                   ref={fileInputRef} 
@@ -180,19 +209,21 @@ export default function ProfilePage() {
             )}
           </div>
 
-          <div className="flex-1 text-center md:text-left">
-            <div className="flex items-center justify-center md:justify-start gap-3 mb-1">
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{profile.name}</h1>
+          <div className="flex-1 text-center md:text-left min-w-0">
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-1">
+              <h2 className="text-2xl font-bold text-foreground break-words">{profile.name}</h2>
               <Badge variant="primary">{profile.role}</Badge>
             </div>
-            <p className="text-slate-500 dark:text-slate-400">{profile.email}</p>
+            <p className="text-foreground-muted truncate">{profile.email}</p>
             {profile.institution && (
-              <p className="text-sm font-medium text-slate-600 dark:text-slate-300 mt-2">{profile.institution}</p>
+              <p className="text-sm font-medium text-foreground mt-1.5 break-words">{profile.institution}</p>
             )}
           </div>
 
           {isOwner && !isEditing && (
-            <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+            <div className="shrink-0">
+              <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+            </div>
           )}
         </CardBody>
       </Card>
@@ -203,22 +234,22 @@ export default function ProfilePage() {
         <div className="md:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <h2 className="font-semibold text-slate-900 dark:text-white">About</h2>
+              <h2 className="font-semibold text-foreground">About</h2>
             </CardHeader>
             <CardBody>
               {isEditing ? (
                 <form onSubmit={handleProfileUpdate} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
-                    <Input value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} required />
+                    <label htmlFor="edit-name" className="block text-sm font-medium text-foreground mb-1">Full Name</label>
+                    <Input id="edit-name" value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} required />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Institution</label>
-                    <Input value={editForm.institution} onChange={e => setEditForm({...editForm, institution: e.target.value})} />
+                    <label htmlFor="edit-institution" className="block text-sm font-medium text-foreground mb-1">Institution</label>
+                    <Input id="edit-institution" value={editForm.institution} onChange={e => setEditForm({...editForm, institution: e.target.value})} />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Bio</label>
-                    <Textarea value={editForm.bio} onChange={e => setEditForm({...editForm, bio: e.target.value})} />
+                    <label htmlFor="edit-bio" className="block text-sm font-medium text-foreground mb-1">Bio</label>
+                    <Textarea id="edit-bio" rows={4} value={editForm.bio} onChange={e => setEditForm({...editForm, bio: e.target.value})} />
                   </div>
                   <div className="flex justify-end gap-3 pt-2">
                     <Button type="button" variant="ghost" onClick={() => setIsEditing(false)}>Cancel</Button>
@@ -226,7 +257,7 @@ export default function ProfilePage() {
                   </div>
                 </form>
               ) : (
-                <p className="text-slate-600 dark:text-slate-300 whitespace-pre-wrap">
+                <p className="text-foreground whitespace-pre-wrap leading-relaxed">
                   {profile.bio || 'No bio provided yet.'}
                 </p>
               )}
@@ -238,19 +269,26 @@ export default function ProfilePage() {
         <div className="md:col-span-1 space-y-6">
           <Card>
             <CardHeader>
-              <h2 className="font-semibold text-slate-900 dark:text-white">Skills & Interests</h2>
+              <h2 className="font-semibold text-foreground">Skills & Interests</h2>
             </CardHeader>
             <CardBody>
               
               <div className="mb-6">
-                <h3 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-3">Competencies</h3>
+                <h3 className="text-xs uppercase tracking-wider font-semibold text-foreground-muted mb-3">Competencies</h3>
                 <div className="flex flex-wrap gap-2">
-                  {skills.filter(s => !s.is_interest).length === 0 && <span className="text-sm text-slate-400">None added</span>}
+                  {skills.filter(s => !s.is_interest).length === 0 && (
+                    <span className="text-sm text-foreground-muted italic">None added yet</span>
+                  )}
                   {skills.filter(s => !s.is_interest).map(skill => (
-                    <Badge key={skill.skill_id} variant="neutral" className="pr-1 flex items-center gap-1">
-                      {skill.skill_name}
+                    <Badge key={skill.skill_id} variant="neutral" className="pr-1.5 flex items-center gap-1.5">
+                      <span>{skill.skill_name}</span>
                       {isOwner && (
-                        <button onClick={() => handleRemoveSkill(skill.skill_id)} className="hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full p-0.5">
+                        <button 
+                          type="button"
+                          onClick={() => handleRemoveSkill(skill.skill_id)} 
+                          aria-label={`Remove skill ${skill.skill_name}`}
+                          className="hover:text-primary rounded-full p-0.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-colors"
+                        >
                           <X size={12} />
                         </button>
                       )}
@@ -259,15 +297,22 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="mb-6">
-                <h3 className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-3">Research Interests</h3>
+              <div>
+                <h3 className="text-xs uppercase tracking-wider font-semibold text-foreground-muted mb-3">Research Interests</h3>
                 <div className="flex flex-wrap gap-2">
-                  {skills.filter(s => s.is_interest).length === 0 && <span className="text-sm text-slate-400">None added</span>}
+                  {skills.filter(s => s.is_interest).length === 0 && (
+                    <span className="text-sm text-foreground-muted italic">None added yet</span>
+                  )}
                   {skills.filter(s => s.is_interest).map(skill => (
-                    <Badge key={skill.skill_id} variant="primary" className="pr-1 flex items-center gap-1">
-                      {skill.skill_name}
+                    <Badge key={skill.skill_id} variant="primary" className="pr-1.5 flex items-center gap-1.5">
+                      <span>{skill.skill_name}</span>
                       {isOwner && (
-                        <button onClick={() => handleRemoveSkill(skill.skill_id)} className="hover:bg-indigo-200 dark:hover:bg-indigo-800 rounded-full p-0.5">
+                        <button 
+                          type="button"
+                          onClick={() => handleRemoveSkill(skill.skill_id)} 
+                          aria-label={`Remove interest ${skill.skill_name}`}
+                          className="hover:text-primary-hover rounded-full p-0.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary transition-colors"
+                        >
                           <X size={12} />
                         </button>
                       )}
@@ -277,24 +322,24 @@ export default function ProfilePage() {
               </div>
 
               {isOwner && (
-                <form onSubmit={handleAddSkill} className="border-t border-slate-100 dark:border-slate-800 pt-4 mt-4">
-                  <div className="flex gap-2 mb-2">
+                <form onSubmit={handleAddSkill} className="border-t border-border-muted dark:border-[#3D3934] pt-4 mt-6">
+                  <div className="flex gap-2 mb-2.5">
                     <Input 
                       placeholder="e.g., Data Analysis" 
                       value={skillInput} 
                       onChange={(e) => setSkillInput(e.target.value)} 
                       required
                     />
-                    <Button type="submit" disabled={addingSkill} className="px-3">
+                    <Button type="submit" disabled={addingSkill} className="px-3" aria-label="Add Skill">
                       <Plus size={16} />
                     </Button>
                   </div>
-                  <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
+                  <label className="flex items-center gap-2 text-sm text-foreground-muted cursor-pointer select-none">
                     <input 
                       type="checkbox" 
                       checked={isInterest} 
                       onChange={(e) => setIsInterest(e.target.checked)}
-                      className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                      className="rounded border-border-dark dark:border-[#575048] text-primary focus:ring-primary"
                     />
                     Tag as Research Interest
                   </label>

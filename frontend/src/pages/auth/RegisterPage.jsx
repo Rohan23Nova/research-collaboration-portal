@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import archHaveli from '../../assets/architecture/Queen\'s_haveli_-_Much_kund_-_20210827_174408_HDR.jpg';
+import patMandala1 from '../../assets/patterns/2746540.svg';
+import patMandala2 from '../../assets/patterns/mandala-svgrepo-com.svg';
 import { UserPlus, AlertCircle } from 'lucide-react';
 
 export default function RegisterPage() {
@@ -46,121 +49,174 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      {/* Theme toggle */}
-      <div className="absolute top-4 right-4">
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-lg text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-        >
-          {theme === 'dark' ? '☀️' : '🌙'}
-        </button>
-      </div>
-
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
-        <div className="w-12 h-12 bg-indigo-600 rounded-xl mx-auto flex items-center justify-center mb-4 shadow-sm">
-          <span className="text-white text-xl font-bold">R</span>
+    <div className="min-h-screen bg-background flex">
+      {/* Left side composition */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-surface-muted dark:bg-[#24211E] overflow-hidden items-center justify-center border-r border-border-muted dark:border-[#4A443D] select-none" aria-hidden="true">
+        {/* Layer 1: Monochrome Queen's Haveli Photo */}
+        <img 
+          src={archHaveli} 
+          alt="" 
+          className="absolute inset-0 w-full h-full object-cover mix-blend-multiply dark:mix-blend-screen opacity-[0.67] dark:opacity-[0.24] dark:brightness-[0.55] dark:contrast-[115%] pointer-events-none z-[1]"
+          style={{ maskImage: 'linear-gradient(to right, rgba(0,0,0,1) 45%, rgba(0,0,0,0.6) 80%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,1) 45%, rgba(0,0,0,0.6) 80%, rgba(0,0,0,0) 100%)', filter: 'grayscale(100%) contrast(94%) brightness(98%)' }}
+        />
+        {/* Layer 2: Dominant Terracotta Mandala (Top-Right corner quadrant crop) */}
+        <img 
+          src={patMandala1} 
+          alt="" 
+          className="absolute -top-[160px] -right-[160px] w-[520px] h-[520px] max-w-none opacity-[0.68] dark:opacity-[0.44] pointer-events-none z-[2]"
+          style={{ filter: 'brightness(0) saturate(100%) invert(51%) sepia(47%) saturate(1487%) hue-rotate(343deg) brightness(88%) contrast(87%)' }}
+        />
+        {/* Layer 2: Subtle Secondary Mandala (Bottom-Left corner quadrant crop) */}
+        <img 
+          src={patMandala2} 
+          alt="" 
+          className="absolute -bottom-[120px] -left-[120px] w-[360px] h-[360px] max-w-none opacity-[0.30] dark:opacity-[0.12] pointer-events-none z-[2]"
+          style={{ filter: 'brightness(0) saturate(100%) invert(51%) sepia(47%) saturate(1487%) hue-rotate(343deg) brightness(88%) contrast(87%)' }}
+        />
+        <div className="relative z-10 text-left p-12 max-w-lg">
+          <div className="w-12 h-12 bg-primary-soft text-primary rounded-xl flex items-center justify-center mb-6 shadow-sm border border-primary/20">
+            <span className="text-xl font-bold">R</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-semibold font-serif text-foreground mb-4">Research Portal</h1>
+          <p className="text-lg text-foreground-muted">
+            A collaborative environment for academic research, planning, and knowledge sharing.
+          </p>
         </div>
-        <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Create an account
-        </h2>
       </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white dark:bg-slate-900 py-8 px-4 shadow-sm border border-slate-200 dark:border-slate-800 sm:rounded-xl sm:px-10">
-          
-          {error && (
-            <div className="mb-6 flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-medium rounded-lg">
-              <AlertCircle size={16} />
-              {error}
-            </div>
-          )}
-
-          <form className="space-y-5" onSubmit={handleSubmit}>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Full Name
-              </label>
-              <input
-                type="text" required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-              />
-              {fieldErrors.name && <p className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Email address
-              </label>
-              <input
-                type="email" required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-              />
-              {fieldErrors.email && <p className="mt-1 text-xs text-red-500">{fieldErrors.email}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Password
-              </label>
-              <input
-                type="password" required minLength="8"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-              />
-              {fieldErrors.password && <p className="mt-1 text-xs text-red-500">{fieldErrors.password}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Role
-              </label>
-              <select
-                value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-              >
-                <option value="STUDENT">Student</option>
-                <option value="FACULTY">Faculty</option>
-                <option value="EXTERNAL">External Researcher</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Institution
-              </label>
-              <input
-                type="text"
-                value={formData.institution}
-                onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
-                className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-                placeholder="Optional"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex w-full mt-2 justify-center items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 transition-all"
-            >
-              <UserPlus size={16} />
-              {loading ? 'Creating account...' : 'Register'}
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Already have an account?{' '}
-              <Link to="/login" className="font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
-                Sign in
-              </Link>
+      {/* Right side form */}
+      <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24 relative z-10">
+        {/* Theme toggle */}
+        <div className="absolute top-4 right-4 z-20">
+          <button 
+            type="button"
+            onClick={toggleTheme} 
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="p-2 rounded-lg text-foreground-muted dark:text-[#B8B0A5] hover:bg-surface-muted dark:hover:bg-[#34302B] hover:text-foreground dark:hover:text-[#F4EFE6] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors duration-150"
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+        </div>
+        
+        <div className="mx-auto w-full max-w-sm lg:w-96">
+          <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">
+              Create an account
+            </h2>
+            <p className="mt-2 text-sm text-foreground-muted">
+              Join the academic collaboration network
             </p>
+          </div>
+
+          <div className="sm:mx-auto sm:w-full sm:max-w-md">
+            <div className="bg-surface dark:bg-[#292622] py-8 px-4 shadow-sm border border-border-muted dark:border-[#3D3934] sm:rounded-xl sm:px-10">
+              
+              {error && (
+                <div className="mb-6 flex items-center gap-2.5 p-3 bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 text-sm font-medium rounded-lg" role="alert">
+                  <AlertCircle size={16} className="shrink-0" aria-hidden="true" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <div>
+                  <label htmlFor="reg-name" className="block text-sm font-medium text-foreground mb-1">
+                    Full Name <span className="text-primary">*</span>
+                  </label>
+                  <input
+                    id="reg-name"
+                    type="text" 
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="block w-full rounded-md border-[1.5px] border-border-dark dark:border-[#575048] bg-surface dark:bg-[#211F1C] px-3 py-2 text-foreground dark:text-[#F4EFE6] placeholder:text-foreground-muted/70 dark:placeholder-[#8F887E] hover:border-foreground-muted dark:hover:border-[#8F887E] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 sm:text-sm transition-all duration-200"
+                  />
+                  {fieldErrors.name && <p className="mt-1 text-xs text-red-500 font-medium">{fieldErrors.name}</p>}
+                </div>
+
+                <div>
+                  <label htmlFor="reg-email" className="block text-sm font-medium text-foreground mb-1">
+                    Email address <span className="text-primary">*</span>
+                  </label>
+                  <input
+                    id="reg-email"
+                    type="email" 
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="block w-full rounded-md border-[1.5px] border-border-dark dark:border-[#575048] bg-surface dark:bg-[#211F1C] px-3 py-2 text-foreground dark:text-[#F4EFE6] placeholder:text-foreground-muted/70 dark:placeholder-[#8F887E] hover:border-foreground-muted dark:hover:border-[#8F887E] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 sm:text-sm transition-all duration-200"
+                    placeholder="you@university.edu"
+                  />
+                  {fieldErrors.email && <p className="mt-1 text-xs text-red-500 font-medium">{fieldErrors.email}</p>}
+                </div>
+
+                <div>
+                  <label htmlFor="reg-password" className="block text-sm font-medium text-foreground mb-1">
+                    Password <span className="text-primary">*</span>
+                  </label>
+                  <input
+                    id="reg-password"
+                    type="password" 
+                    required 
+                    minLength="8"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="block w-full rounded-md border-[1.5px] border-border-dark dark:border-[#575048] bg-surface dark:bg-[#211F1C] px-3 py-2 text-foreground dark:text-[#F4EFE6] hover:border-foreground-muted dark:hover:border-[#8F887E] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 sm:text-sm transition-all duration-200"
+                  />
+                  {fieldErrors.password && <p className="mt-1 text-xs text-red-500 font-medium">{fieldErrors.password}</p>}
+                </div>
+
+                <div>
+                  <label htmlFor="reg-role" className="block text-sm font-medium text-foreground mb-1">
+                    Role <span className="text-primary">*</span>
+                  </label>
+                  <select
+                    id="reg-role"
+                    value={formData.role}
+                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                    className="block w-full rounded-md border-[1.5px] border-border-dark dark:border-[#575048] bg-surface dark:bg-[#211F1C] px-3 py-2 text-foreground dark:text-[#F4EFE6] hover:border-foreground-muted dark:hover:border-[#8F887E] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 sm:text-sm transition-all duration-200 cursor-pointer"
+                  >
+                    <option value="STUDENT">Student</option>
+                    <option value="FACULTY">Faculty</option>
+                    <option value="EXTERNAL">External Researcher</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="reg-institution" className="block text-sm font-medium text-foreground mb-1">
+                    Institution
+                  </label>
+                  <input
+                    id="reg-institution"
+                    type="text"
+                    value={formData.institution}
+                    onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
+                    className="block w-full rounded-md border-[1.5px] border-border-dark dark:border-[#575048] bg-surface dark:bg-[#211F1C] px-3 py-2 text-foreground dark:text-[#F4EFE6] placeholder:text-foreground-muted/70 dark:placeholder-[#8F887E] hover:border-foreground-muted dark:hover:border-[#8F887E] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 sm:text-sm transition-all duration-200"
+                    placeholder="University or Organization (optional)"
+                  />
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex w-full justify-center items-center gap-2 rounded-md bg-primary text-surface dark:text-[#F4EFE6] px-4 py-2.5 text-sm font-semibold border-2 border-border-dark dark:border-[#575048] shadow-doodle-sm hover:bg-primary-hover dark:hover:bg-[#D88959] active:translate-x-[0.5px] active:translate-y-[0.5px] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  >
+                    <UserPlus size={16} aria-hidden="true" />
+                    {loading ? 'Creating account...' : 'Register'}
+                  </button>
+                </div>
+              </form>
+
+              <div className="mt-6 text-center">
+                <p className="text-sm text-foreground-muted">
+                  Already have an account?{' '}
+                  <Link to="/login" className="font-semibold text-primary hover:underline">
+                    Sign in
+                  </Link>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

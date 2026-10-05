@@ -54,7 +54,7 @@ export default function WorkspacePage() {
       setProject(data.project);
       if (data.userConnection.isLeader) setUserRole('Leader');
       else if (data.userConnection.isMember) setUserRole('Member');
-      else setUserRole('Admin'); // If they got past the block but aren't member/leader, they are ADMIN
+      else setUserRole('Admin');
       
     } catch (err) {
       addToast('Failed to load workspace context', 'error');
@@ -66,50 +66,63 @@ export default function WorkspacePage() {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto space-y-4">
-        <Skeleton className="h-24 w-full rounded-xl" />
-        <Skeleton className="h-[500px] w-full rounded-xl" />
+      <div className="max-w-6xl mx-auto space-y-6 pb-12 sm:pb-16">
+        <div>
+          <Skeleton className="h-5 w-28 mb-3" />
+          <Skeleton className="h-8 w-64 mb-2" />
+          <Skeleton className="h-4 w-48" />
+        </div>
+        <div className="flex gap-4 border-b border-border-muted pb-2">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <Skeleton key={i} className="h-9 w-28 rounded-md" />
+          ))}
+        </div>
+        <Skeleton className="h-[400px] w-full rounded-xl" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto pb-20">
+    <div className="max-w-6xl mx-auto pb-12 sm:pb-16">
       
       {/* Header Context */}
       <div className="mb-6">
-        <Link to={`/projects/${id}`} className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white mb-4 transition-colors">
-          <ArrowLeft size={16} /> Project Details
+        <Link 
+          to={`/projects/${id}`} 
+          className="inline-flex items-center gap-2 text-sm font-medium text-foreground-muted hover:text-foreground dark:text-foreground-muted dark:hover:text-[#F4EFE6] mb-4 transition-colors duration-150 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          <ArrowLeft size={16} aria-hidden="true" /> Project Details
         </Link>
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-              {project.title} <span className="text-sm font-normal text-slate-500">Workspace</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl sm:text-3xl font-semibold font-serif text-foreground flex flex-wrap items-center gap-3 break-words">
+              <span>{project.title}</span> 
+              <span className="text-sm font-sans font-normal text-foreground-muted">Workspace</span>
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-sm text-foreground-muted mt-1">
               You are participating as <Badge variant="primary">{userRole}</Badge>
             </p>
           </div>
-          <Badge variant={project.status === 'Active' ? 'success' : 'neutral'}>{project.status}</Badge>
+          <Badge variant={project.status === 'Active' ? 'success' : 'neutral'} className="shrink-0">{project.status}</Badge>
         </div>
       </div>
 
       {/* Tabs Navigation */}
-      <div className="border-b border-slate-200 dark:border-slate-800 mb-6">
-        <nav className="-mb-px flex space-x-8 overflow-x-auto">
+      <div className="border-b border-border-muted dark:border-[#3D3934] mb-6">
+        <nav className="-mb-px flex space-x-6 overflow-x-auto scrollbar-none" aria-label="Workspace tabs">
           {TABS.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`
-                group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap
+                group inline-flex items-center py-3.5 px-1 border-b-2 font-medium text-sm transition-all duration-200 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-t-sm
                 ${activeTab === tab.id 
-                  ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400' 
-                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300'}
+                  ? 'border-primary text-primary font-semibold' 
+                  : 'border-transparent text-foreground-muted hover:text-foreground hover:border-border-muted dark:hover:text-[#F4EFE6] dark:hover:border-[#575048]'}
               `}
             >
-              <tab.icon className={`mr-2 h-5 w-5 ${activeTab === tab.id ? 'text-indigo-500 dark:text-indigo-400' : 'text-slate-400 group-hover:text-slate-500 dark:group-hover:text-slate-300'}`} />
-              {tab.label}
+              <tab.icon className={`mr-2 h-4 w-4 transition-colors ${activeTab === tab.id ? 'text-primary' : 'text-foreground-muted group-hover:text-foreground dark:group-hover:text-[#F4EFE6]'}`} aria-hidden="true" />
+              <span>{tab.label}</span>
             </button>
           ))}
         </nav>

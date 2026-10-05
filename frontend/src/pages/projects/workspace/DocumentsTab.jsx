@@ -110,11 +110,11 @@ export default function DocumentsTab({ projectId, isLeader }) {
     <div className="space-y-6">
       
       {/* Upload Area */}
-      <Card className="border-dashed border-2 bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">
+      <Card className="border-dashed border-2 bg-surface-muted/50 bg-surface/50 hover:bg-surface-muted hover:bg-surface-muted transition-colors">
         <CardBody className="text-center py-10">
-          <UploadCloud className="mx-auto h-12 w-12 text-slate-400 mb-4" />
-          <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">Upload a Document</h3>
-          <p className="text-sm text-slate-500 mb-4">PDF, DOCX, TXT, or Image up to 20MB</p>
+          <UploadCloud className="mx-auto h-12 w-12 text-foreground-muted mb-4" />
+          <h3 className="text-lg font-medium text-foreground mb-2">Upload a Document</h3>
+          <p className="text-sm text-foreground-muted mb-4">PDF, DOCX, TXT, or Image up to 20MB</p>
           <input 
             type="file" 
             ref={fileInputRef} 
@@ -136,16 +136,16 @@ export default function DocumentsTab({ projectId, isLeader }) {
             <Card key={doc.document_id}>
               <CardBody className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg text-indigo-600 dark:text-indigo-400 shrink-0">
+                  <div className="p-3 bg-primary-soft rounded-lg text-primary shrink-0">
                     <FileIcon size={24} />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-900 dark:text-white flex flex-wrap items-center gap-2">
+                    <h4 className="font-semibold text-foreground flex flex-wrap items-center gap-2">
                       <span className="break-all">{doc.file_name}</span>
                       <Badge variant="neutral" className="shrink-0">v{doc.version}</Badge>
                     </h4>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Uploaded by <span className="font-medium text-slate-700 dark:text-slate-300">{doc.uploader_name}</span> on {new Date(doc.uploaded_at).toLocaleDateString()}
+                    <p className="text-xs text-foreground-muted mt-1">
+                      Uploaded by <span className="font-medium text-foreground">{doc.uploader_name}</span> on {new Date(doc.uploaded_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
@@ -165,8 +165,9 @@ export default function DocumentsTab({ projectId, isLeader }) {
           );
         })}
         {documents.length === 0 && (
-          <div className="text-center text-slate-500 py-12 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
-            No documents uploaded yet.
+          <div className="text-center text-foreground-muted py-10 bg-surface dark:bg-[#292622] rounded-xl border-2 border-dashed border-border-muted dark:border-[#3D3934]">
+            <p className="font-semibold text-foreground text-sm">No documents uploaded yet</p>
+            <p className="text-xs text-foreground-muted mt-1">Uploaded project assets, research papers, and datasets will appear here.</p>
           </div>
         )}
       </div>

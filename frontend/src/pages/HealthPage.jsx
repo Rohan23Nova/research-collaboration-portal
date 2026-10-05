@@ -30,12 +30,12 @@ function StatusBadge({ status }) {
 // ── InfoRow ──────────────────────────────────────────────────────────────────
 function InfoRow({ icon: Icon, label, value }) {
   return (
-    <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800 last:border-0">
-      <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+    <div className="flex items-center justify-between py-3 border-b border-border-muted last:border-0">
+      <div className="flex items-center gap-2 text-sm text-foreground-muted">
         <Icon size={15} />
         {label}
       </div>
-      <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{value}</span>
+      <span className="text-sm font-medium text-foreground">{value}</span>
     </div>
   );
 }
@@ -78,25 +78,26 @@ export default function HealthPage() {
   const d = health?.data;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
+    <div className="min-h-screen bg-surface-muted bg-background flex flex-col">
 
       {/* ── Top bar ── */}
-      <header className="sticky top-0 z-10 h-14 border-b border-slate-200 dark:border-slate-800
-        bg-white/80 dark:bg-slate-950/80 backdrop-blur-md
+      <header className="sticky top-0 z-10 h-14 border-b border-border-muted
+        bg-surface/80 bg-background/80 backdrop-blur-md
         flex items-center justify-between px-6">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-indigo-600 flex items-center justify-center">
+          <div className="w-6 h-6 rounded bg-primary text-surface flex items-center justify-center">
             <span className="text-white text-xs font-bold">R</span>
           </div>
-          <span className="font-semibold text-slate-900 dark:text-slate-100 text-sm">
+          <span className="font-semibold text-foreground text-sm">
             Research Collaboration Portal
           </span>
         </div>
         {/* Dark mode toggle */}
         <button
+          type="button"
           onClick={toggleTheme}
-          className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800
-            text-slate-500 dark:text-slate-400 transition-colors duration-150"
+          className="p-2 rounded-lg hover:bg-surface-muted dark:hover:bg-[#34302B]
+            text-foreground-muted dark:text-[#B8B0A5] transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           aria-label="Toggle theme"
         >
           {theme === 'dark' ? '☀️' : '🌙'}
@@ -109,26 +110,26 @@ export default function HealthPage() {
 
           {/* Page title */}
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+            <h1 className="text-2xl font-bold text-foreground">
               System Health
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-sm text-foreground-muted mt-1">
               Verifies the API server and database connection
             </p>
           </div>
 
           {/* ── Status card ── */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200
-            dark:border-slate-800 shadow-sm overflow-hidden">
+          <div className="bg-surface rounded-xl border border-border-muted
+            border-border-muted shadow-sm overflow-hidden">
 
             {/* Card header */}
-            <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800
+            <div className="px-5 py-4 border-b border-border-muted
               flex items-center justify-between">
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+              <span className="text-sm font-semibold text-foreground">
                 Health Check
               </span>
               {!loading && lastFetched && (
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-foreground-muted">
                   Last checked: {lastFetched}
                 </span>
               )}
@@ -141,9 +142,9 @@ export default function HealthPage() {
                 <div className="space-y-3 animate-pulse">
                   {[1, 2, 3, 4].map((i) => (
                     <div key={i} className="flex justify-between items-center py-3
-                      border-b border-slate-100 dark:border-slate-800 last:border-0">
-                      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-28" />
-                      <div className="h-5 bg-slate-200 dark:bg-slate-700 rounded w-20" />
+                      border-b border-border-muted last:border-0">
+                      <div className="h-4 bg-surface-muted rounded w-28" />
+                      <div className="h-5 bg-surface-muted rounded w-20" />
                     </div>
                   ))}
                 </div>
@@ -156,8 +157,8 @@ export default function HealthPage() {
                   <p className="font-semibold text-red-600 dark:text-red-400">
                     Cannot reach server
                   </p>
-                  <p className="text-xs text-slate-400 mt-1">{error}</p>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-foreground-muted mt-1">{error}</p>
+                  <p className="text-xs text-foreground-muted mt-1">
                     Is the backend running on port 5000?
                   </p>
                 </div>
@@ -185,8 +186,8 @@ export default function HealthPage() {
                     icon={Server}
                     label="Environment"
                     value={
-                      <span className="capitalize px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/30
-                        text-indigo-700 dark:text-indigo-300 rounded text-xs font-medium">
+                      <span className="capitalize px-2 py-0.5 bg-primary-soft dark:bg-[#6E4634]/40
+                        text-primary dark:text-[#D88959] rounded text-xs font-medium">
                         {d?.environment ?? '—'}
                       </span>
                     }
@@ -214,7 +215,7 @@ export default function HealthPage() {
             onClick={fetchHealth}
             disabled={loading}
             className="w-full flex items-center justify-center gap-2 py-2.5 px-4
-              bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed
+              bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed
               text-white text-sm font-medium rounded-lg
               transition-colors duration-150 shadow-sm"
           >
@@ -222,7 +223,7 @@ export default function HealthPage() {
             {loading ? 'Checking…' : 'Refresh'}
           </button>
 
-          <p className="text-center text-xs text-slate-400">
+          <p className="text-center text-xs text-foreground-muted">
             Phase 1 — Project Setup
           </p>
         </div>
